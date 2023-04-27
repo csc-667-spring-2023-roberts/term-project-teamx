@@ -3,4 +3,4 @@ const requestTime = (request, response, next) => {
   next();
 };
 
-module.exports = requestTime;
+export default requestTime;
