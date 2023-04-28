@@ -1,6 +1,6 @@
-const requestTime = (request, response, next) => {
-  console.log(`Request recieved at ${Date.now()}: ${request.method}`);
+const requestTime = (request, _response, next) => {
+  console.log(`Request received at ${Date.now()}: ${request.method}`);
   next();
 };
 
-module.exports = requestTime;
+export default requestTime;
