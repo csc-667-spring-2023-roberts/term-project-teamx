@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./backend/server.js",
-    "start:dev": "nodemon --watch backend ./server.js",
+    "start:dev": "NODE_ENV=development nodemon --watch backend ./backend/server.js",
     "db:create": "node-pg-migrate create -- ",
     "db:migrate": "node-pg-migrate up",
     "db:rollback": "node-pg-migrate down",

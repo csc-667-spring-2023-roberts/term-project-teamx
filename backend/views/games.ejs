@@ -1,18 +1,14 @@
 <html>
   <head>
-    <title><%= title %></title>
+    <title>Game Page</title>
     <script src="/scripts/bundle.js"></script>
     <link rel="stylesheet" href="/stylesheets/home.css" />
   </head>
   <body>
-    <h1>Game <%= id %> Page (Authenticated)</h1>
+    <h1>Game Page (Authenticated)</h1>
+    <a href="/lobby">Lobby</a>
 
-    <ul>
-      <li><a href="/">Home</a></li>
-      <li><a href="/authentication/login">Login</a></li>
-      <li><a href="/authentication/register">Sign Up</a></li>
-      <li><a href="/lobby">Lobby</a></li>
-      <li><a href="/games">UNO</a></li>
-    </ul>
+    <div id="game">Game area</div>
+    <div id="chat">Chat area</div>
   </body>
 </html>
