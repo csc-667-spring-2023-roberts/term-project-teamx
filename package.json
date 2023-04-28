@@ -7,7 +7,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./backend/server.js",
-    "start:dev": "NODE_ENV=development nodemon --watch backend ./backend/server.js",
+    "start:dev": "concurrently \"npm:server:dev\" \"npm:build:css\" \"npm:build:dev\"",
+    "server:dev": "NODE_ENV=development nodemon --watch backend ./backend/server.js",
+    "build:dev": "esbuild ./frontend/index.js ./frontend/games/index.js --bundle --outdir=./backend/static/scripts/ --sourcemap --watch",
+    "build:css": "npx tailwindcss -i ./frontend/css/index.css -o ./backend/static/stylesheets/index.css --watch",
     "db:create": "node-pg-migrate create -- ",
     "db:migrate": "node-pg-migrate up",
     "db:rollback": "node-pg-migrate down",
@@ -17,14 +20,13 @@
   "author": "pie240:Andy, Kepler:Arjun, Tydershot:Tyler, KARMA",
   "license": "ISC",
   "dependencies": {
-    "babel-loader": "^9.1.2",
     "bcrypt": "^5.1.0",
-    "concurrently": "^7.6.0",
     "connect-livereload": "^0.6.1",
     "connect-pg-simple": "^8.0.0",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
     "ejs": "^3.1.9",
+    "esbuild": "0.17.18",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "http-errors": "^2.0.0",
@@ -40,11 +42,15 @@
     "pug": "^3.0.2",
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1",
-    "ts-loader": "^9.4.2",
-    "webpack": "^5.76.1",
-    "webpack-cli": "^5.0.1"
+    "ts-loader": "^9.4.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "@babel/preset-env": "^7.21.4",
+    "babel-loader": "^9.1.2",
+    "concurrently": "^8.0.1",
+    "nodemon": "^2.0.22",
+    "tailwindcss": "^3.3.2",
+    "webpack": "^5.76.1",
+    "webpack-cli": "^5.0.2"
   }
 }

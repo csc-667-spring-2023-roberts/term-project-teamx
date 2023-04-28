@@ -1,14 +1,31 @@
 <html>
   <head>
     <title>Game Page</title>
-    <script src="/scripts/bundle.js"></script>
-    <link rel="stylesheet" href="/stylesheets/home.css" />
+    <script src="/scripts/index.js" defer></script>
+    <script src="/scripts/games/index.js" defer></script>
+    <link rel="stylesheet" href="/stylesheets/index.css" />
   </head>
   <body>
     <h1>Game Page (Authenticated)</h1>
     <a href="/lobby">Lobby</a>
 
-    <div id="game">Game area</div>
+    <div id="game">
+      Game area
+
+      <div id="users">
+        <div class="user">
+          <span class="username"><%= creating_user %></span>
+          <div class="cards"></div>
+        </div>
+      </div>
+    </div>
     <div id="chat">Chat area</div>
+
+    <template id="user-template">
+      <div class="user">
+        <span class="username"></span>
+        <div class="cards"></div>
+      </div>
+    </template>
   </body>
 </html>

@@ -3339,4 +3339,4 @@
   });
   require_frontend();
 })();
-//# sourceMappingURL=bundle.js.map
+//# sourceMappingURL=index.js.map

@@ -3294,49 +3294,50 @@
     }
   });
 
-  // backend/sockets/constants.js
-  var require_constants = __commonJS({
-    "backend/sockets/constants.js"(exports, module) {
-      var CHAT_MESSAGE_RECEIVED = "chat-message-received";
+  // frontend/util/game-id.js
+  function getGameId(location2) {
+    const gameId = location2.substring(location2.lastIndexOf("/") + 1);
+    if (gameId === "lobby") {
+      return 0;
+    } else {
+      return parseInt(gameId);
+    }
+  }
+  var init_game_id = __esm({
+    "frontend/util/game-id.js"() {
+    }
+  });
+
+  // constants/events.js
+  var require_events = __commonJS({
+    "constants/events.js"(exports, module) {
+      var PLAYER_JOINED = (game_id) => `game:${game_id}:player-joined`;
       module.exports = {
-        CHAT_MESSAGE_RECEIVED
+        GAMES: { PLAYER_JOINED }
       };
     }
   });
 
-  // frontend/index.js
-  var require_frontend = __commonJS({
-    "frontend/index.js"() {
+  // frontend/games/index.js
+  var require_games = __commonJS({
+    "frontend/games/index.js"() {
       init_esm4();
-      var import_constants = __toESM(require_constants());
+      init_game_id();
+      var import_events = __toESM(require_events());
       var socket = lookup2();
-      console.log("kjashdlkashdfkl");
-      var messageContainer = document.querySelector("#messages");
-      socket.on(import_constants.default.CHAT_MESSAGE_RECEIVED, ({ username, message, timestamp }) => {
-        const entry = document.createElement("div");
-        const displayName = document.createElement("span");
-        displayName.innerText = username;
-        const displayMessage = document.createElement("span");
-        displayMessage.innerText = message;
-        const displayTimestamp = document.createElement("span");
-        displayTimestamp.innerText = timestamp;
-        entry.append(displayName, displayMessage, displayTimestamp);
-        messageContainer.appendChild(entry);
-      });
-      document.querySelector("input#chatMessage").addEventListener("keydown", (event) => {
-        if (event.keyCode !== 13) {
-          return;
+      var userTemplate = document.querySelector("#user-template");
+      var users = document.querySelector("#users");
+      socket.on(
+        import_events.GAMES.PLAYER_JOINED(getGameId(document.location.pathname)),
+        ({ username }) => {
+          console.log({ userTemplate });
+          const user = userTemplate.content.cloneNode(true);
+          user.querySelector("span.username").innerText = username;
+          users.appendChild(user);
         }
-        const message = event.target.value;
-        event.target.value = "";
-        fetch("/chat/0", {
-          method: "post",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message })
-        });
-      });
+      );
     }
   });
-  require_frontend();
+  require_games();
 })();
-//# sourceMappingURL=bundle.js.map
+//# sourceMappingURL=index.js.map

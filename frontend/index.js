@@ -2,7 +2,7 @@ import io from "socket.io-client";
 import events from "../backend/sockets/constants";
 
 const socket = io();
-
+console.log("kjashdlkashdfkl");
 const messageContainer = document.querySelector("#messages");
 
 socket.on(events.CHAT_MESSAGE_RECEIVED, ({ username, message, timestamp }) => {

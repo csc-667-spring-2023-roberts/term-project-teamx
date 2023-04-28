@@ -21,6 +21,9 @@
     <div id="games-list">
       <form method="post" action="/games/create">
         <input type="submit" value="Create Game" />
+        <% for(let i = 0; i < games.length; i++) { %>
+        <a href="/games/<%= games[i].id %>/join">Join <%= games[i].id %></a>
+        <% } %>
       </form>
     </div>
     <div id="chat-container">
