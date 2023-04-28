@@ -8,12 +8,12 @@ router.post("/:id", async (request, response) => {
   const { message } = request.body;
   const { username, id } = request.session.user;
 
-  const { created_at: timestamp } = await Chat.create(message, id);
+  // const { created_at: timestamp } = await Chat.create(message, id);
 
   io.emit(events.CHAT_MESSAGE_RECEIVED, {
     message,
     username,
-    timestamp,
+    timestamp: Date.now(),
   });
 
   response.status(200);

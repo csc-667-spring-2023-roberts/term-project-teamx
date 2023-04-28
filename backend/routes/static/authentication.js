@@ -72,4 +72,10 @@ router.get("/logout", (request, response) => {
   response.redirect("/");
 });
 
+router.post("/whoami", (request, response) => {
+  const { id } = request.session.user;
+
+  response.json({ id });
+});
+
 module.exports = router;

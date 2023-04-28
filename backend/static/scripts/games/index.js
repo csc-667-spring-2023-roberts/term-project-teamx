@@ -3312,8 +3312,9 @@
   var require_events = __commonJS({
     "constants/events.js"(exports, module) {
       var PLAYER_JOINED = (game_id) => `game:${game_id}:player-joined`;
+      var GAME_STATE_UPDATED = (game_id, user_id) => `game:${game_id}:${user_id}:updated`;
       module.exports = {
-        GAMES: { PLAYER_JOINED }
+        GAMES: { PLAYER_JOINED, GAME_STATE_UPDATED }
       };
     }
   });
@@ -3327,15 +3328,26 @@
       var socket = lookup2();
       var userTemplate = document.querySelector("#user-template");
       var users = document.querySelector("#users");
-      socket.on(
-        import_events.GAMES.PLAYER_JOINED(getGameId(document.location.pathname)),
-        ({ username }) => {
-          console.log({ userTemplate });
-          const user = userTemplate.content.cloneNode(true);
-          user.querySelector("span.username").innerText = username;
-          users.appendChild(user);
-        }
-      );
+      var game_id = getGameId(document.location.pathname);
+      socket.on(import_events.GAMES.PLAYER_JOINED(game_id), ({ username }) => {
+        const user = userTemplate.content.cloneNode(true);
+        user.querySelector("span.username").innerText = username;
+        users.appendChild(user);
+      });
+      fetch("/authentication/whoami", {
+        method: "post"
+      }).then((r) => r.json()).then(({ id: user_id }) => {
+        console.log({ user_id });
+        socket.on(
+          import_events.GAMES.GAME_STATE_UPDATED(game_id, user_id),
+          async (game_state) => {
+            console.log({ game_state });
+          }
+        );
+      });
+      document.querySelector("#draw-pile").addEventListener("click", (_event) => {
+        fetch(`/games/${game_id}/draw`, { method: "post" });
+      });
     }
   });
   require_games();

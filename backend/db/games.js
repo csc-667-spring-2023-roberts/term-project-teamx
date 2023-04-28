@@ -34,9 +34,16 @@ const join = async (user_id, game_id) => {
   await db.none(JOIN_GAME, [game_id, user_id, max + 1]);
 };
 
+const getUsers = (game_id) =>
+  db.any(
+    "SELECT id, username FROM users, game_users WHERE game_users.game_id=$1 AND game_users.user_id=users.id",
+    [game_id]
+  );
+
 module.exports = {
   create,
   creatingUser,
+  getUsers,
   join,
   list,
 };

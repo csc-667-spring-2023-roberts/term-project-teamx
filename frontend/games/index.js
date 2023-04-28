@@ -7,14 +7,30 @@ const socket = io();
 const userTemplate = document.querySelector("#user-template");
 const users = document.querySelector("#users");
 
-socket.on(
-  GAMES.PLAYER_JOINED(getGameId(document.location.pathname)),
-  ({ username }) => {
-    console.log({ userTemplate });
-    const user = userTemplate.content.cloneNode(true);
+const game_id = getGameId(document.location.pathname);
 
-    user.querySelector("span.username").innerText = username;
+socket.on(GAMES.PLAYER_JOINED(game_id), ({ username }) => {
+  const user = userTemplate.content.cloneNode(true);
 
-    users.appendChild(user);
-  }
-);
+  user.querySelector("span.username").innerText = username;
+
+  users.appendChild(user);
+});
+
+fetch("/authentication/whoami", {
+  method: "post",
+})
+  .then((r) => r.json())
+  .then(({ id: user_id }) => {
+    console.log({ user_id });
+    socket.on(
+      GAMES.GAME_STATE_UPDATED(game_id, user_id),
+      async (game_state) => {
+        console.log({ game_state });
+      }
+    );
+  });
+
+document.querySelector("#draw-pile").addEventListener("click", (_event) => {
+  fetch(`/games/${game_id}/draw`, { method: "post" });
+});

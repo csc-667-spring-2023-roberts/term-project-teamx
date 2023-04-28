@@ -3310,17 +3310,13 @@
       init_esm4();
       var import_constants = __toESM(require_constants());
       var socket = lookup2();
-      console.log("kjashdlkashdfkl");
       var messageContainer = document.querySelector("#messages");
+      var chatMessageTemplate = document.querySelector("#chat-message-template");
       socket.on(import_constants.default.CHAT_MESSAGE_RECEIVED, ({ username, message, timestamp }) => {
-        const entry = document.createElement("div");
-        const displayName = document.createElement("span");
-        displayName.innerText = username;
-        const displayMessage = document.createElement("span");
-        displayMessage.innerText = message;
-        const displayTimestamp = document.createElement("span");
-        displayTimestamp.innerText = timestamp;
-        entry.append(displayName, displayMessage, displayTimestamp);
+        const entry = chatMessageTemplate.content.cloneNode(true);
+        entry.querySelector(".username").innerText = username;
+        entry.querySelector(".message").innerText = message;
+        entry.querySelector(".timestamp").innerText = timestamp;
         messageContainer.appendChild(entry);
       });
       document.querySelector("input#chatMessage").addEventListener("keydown", (event) => {
