@@ -1,22 +1,32 @@
 /* eslint-disable camelcase */
 
-exports.shorthands = undefined;
 
 exports.up = pgm => {
-  pgm.createTable("testtable", {
-    // From the docs, "id" is equivalent to: { type: 'serial', primaryKey: true }
+  pgm.createTable("users", {
     id: "id",
+    username: {
+      type: "varchar(256)",
+      notNull: true,
+      unique: true,
+    },
+    email: {
+      type: "varchar(256)",
+      notNull: true,
+      unique: true,
+    },
+    password: {
+      type: "char(60)",
+      notNull: true,
+    },
     created_at: {
       type: "timestamp",
       notNull: true,
       default: pgm.func("current_timestamp"),
     },
-    test_string: {
-      type: "varchar(1000)",
-      notNull: true,
-    },
   });
 };
 
-exports.down = pgm => {};
+exports.down = pgm => {
+  pgm.dropTable("users");
+};
 

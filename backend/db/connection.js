@@ -1,4 +1,4 @@
-import pgp from "pg-promise";
+const pgp = require("pg-promise")();
 const connection = pgp(process.env.DATABASE_URL);
 
-export default connection;  
+module.exports = connection;

@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="/stylesheets/home.css" />
   </head>
   <body>
-    <h1>Home Page (Unauthenticated)</h1>
+    <h1>Login Page (Unauthenticated)</h1>
 
     <ul>
       <li><a href="/">Home</a></li>
@@ -14,5 +14,21 @@
       <li><a href="/lobby">Lobby</a></li>
       <li><a href="/games">UNO</a></li>
     </ul>
+
+    <form method="post" action="/authentication/login">
+      <label>
+        <em>Email</em>
+        <input name="email" autocomplete="email" />
+      </label>
+      <label>
+        <em>Password</em>
+        <input
+          name="password"
+          type="password"
+          autocomplete="current-password"
+        />
+      </label>
+      <input type="submit" value="Login" />
+    </form>
   </body>
 </html>

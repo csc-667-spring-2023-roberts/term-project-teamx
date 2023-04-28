@@ -1,13 +1,9 @@
-import express from "express";
+const express = require("express");
 
 const router = express.Router();
 
-router.get("/",(_request, response)=>{
-  const name=  "Team X";
-  
-  response.render("home",{title: "Team X term project",name});
-})
+router.get("/", (_request, response) => {
+  response.render("home", { title: "Team X term project" });
+});
 
-router.get("/:id",)
-
-export default router;
+module.exports = router;
