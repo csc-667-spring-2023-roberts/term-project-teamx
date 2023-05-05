@@ -10,18 +10,35 @@
     <a href="/lobby">Lobby</a>
 
     <div id="game">
-      Game area
+      Game: <%= game_id %>
 
       <div id="draw-pile">I'm the draw pile make me pretty</div>
 
       <div id="users">
         <div class="user">
-          <span class="username"><%= creating_user %></span>
+          <span class="username">Host:<%= creating_user %></span>
           <div class="cards"></div>
         </div>
       </div>
     </div>
+
     <div id="chat">Chat area</div>
+    <!-- Chat Box -->
+    <div id="chat-container"> 
+      <div id="messages"></div>
+      <label>
+        <input id="chatMessage" name="chat-message" placeholder="Message..." />
+      </label>
+    </div>
+
+    <!-- A Chat Message -->
+    <template id="chat-message-template">
+      <div>
+        <span class="username"></span>
+        <span class="message"></span>
+        <span class="timestamp"></span>
+      </div>
+    </template>
 
     <template id="user-template">
       <div class="user">
@@ -29,5 +46,14 @@
         <div class="cards"></div>
       </div>
     </template>
+
+    <!-- A Card -->
+    <template id="card-template">
+      <div>
+        <span class="number"></span>
+        <span class="color"></span>
+      </div>
+    </template>
+
   </body>
 </html>
