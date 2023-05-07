@@ -9,6 +9,10 @@
       Lobby Page (Authenticated) - Hi <%= user.username %> (<%= user.id %>)
     </h1>
 
+    <div>
+      <p>idnfaslnd</p>
+    </div>
+
     <ul>
       <li><a href="/">Home</a></li>
       <li><a href="/authentication/login">Login</a></li>
@@ -21,11 +25,21 @@
     <div id="games-list">
       <form method="post" action="/games/create">
         <input type="submit" value="Create Game" />
-        <% for(let i = 0; i < games.length; i++) { %>
+        <% for(let i = 0; i < 100; i++) { %>
         <a href="/games/<%= games[i].id %>/join">Join <%= games[i].id %></a>
         <% } %>
       </form>
     </div>
+
+    <div>
+      1
+      2
+      3
+      4
+    </div>
+
+
+
     <div id="chat-container">
       <div id="messages"></div>
       <label>
@@ -40,5 +54,26 @@
         <span class="timestamp"></span>
       </div>
     </template>
+  </body>
+</html>
+
+
+
+
+<html>
+  <title>
+
+  </title>
+  <body>
+    
+    <div id="navigation">
+<!- home page, loby, logout, profile>
+    </div>
+    <div>
+all the players in the game, each player cards, color , deck , colorcard, 
+    </div>
+    <div>
+
+    </div>
   </body>
 </html>
