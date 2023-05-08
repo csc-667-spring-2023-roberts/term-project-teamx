@@ -15,7 +15,6 @@ const list = (user_id) => db.any(GAMES_LIST_SQL, [user_id]);
 
 const create = async (user_id) => {
   const { id } = await db.one(CREATE_SQL);
-  console.log({ game_id_created: id });
 
   await db.none(ADD_USER_SQL, [user_id, id, 0]);
 

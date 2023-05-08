@@ -7,7 +7,8 @@
   </head>
   <body>
     <h1>Game Page (Authenticated)</h1>
-    <a href="/lobby">Lobby</a>
+    <form method="get" action="/lobby">
+      <input type="submit" value="Exit"/>
 
     <div id="game">
       Game: <%= game_id %>
@@ -21,6 +22,22 @@
         </div>
       </div>
     </div>
+
+    <!-- A User -->
+    <template id="user-template">
+      <div class="user">
+        <span class="username"></span>
+        <div class="cards"></div>
+      </div>
+    </template>
+
+    <!-- A Card -->
+    <template id="card-template">
+      <div>
+        <span class="number"></span>
+        <span class="color"></span>
+      </div>
+    </template>
 
     <div id="chat">Chat area</div>
     <!-- Chat Box -->
@@ -37,21 +54,6 @@
         <span class="username"></span>
         <span class="message"></span>
         <span class="timestamp"></span>
-      </div>
-    </template>
-
-    <template id="user-template">
-      <div class="user">
-        <span class="username"></span>
-        <div class="cards"></div>
-      </div>
-    </template>
-
-    <!-- A Card -->
-    <template id="card-template">
-      <div>
-        <span class="number"></span>
-        <span class="color"></span>
       </div>
     </template>
 
