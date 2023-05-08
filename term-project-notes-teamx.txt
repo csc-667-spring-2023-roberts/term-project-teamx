@@ -1,0 +1,94 @@
+Title: Term Project Notes TeamX
+Class: CSC 667/867
+Project: UNO
+Team: X
+Team-Members: Andy Almeida - pie240, Arjun - Kepler, Tyler - Tydershot, *KARMA
+
+Set-Up:
+	1.Install Node.js
+	2.Install PostgreSQL
+	3.Git Fetch the Repo: https://github.com/csc-667-spring-2023-roberts/term-project-teamx.git
+	4.Create a .env file in the folder
+	5.Add to the .env file: 
+		DATABASE_URL=postgres://USERNAME:PASSWORD@localhost:5432/team-x
+		SECRET=mySecretKey
+	5.npm init
+	6.npm install
+	7.npm run start:dev
+	8.The server should be runnable, and you can add to the code. When you save the project, it will immediately 
+
+Database Breakdown:
+	Tables:
+		test_table:
+			id: id
+			created_at: timestamp, nn, default("current_timestamp")
+		users:
+			id: id
+			username: varchar(256), nn, unique
+			email: varchar(256), nn, unique
+			password: char(60), nn
+			created_at: timestamp, nn, default("current_timestamp")
+		game:
+			id: id
+			created_at: timestamp, nn, default("current_timestamp")
+		game_users:
+			user_id: int, nn
+			game_id: int, nn
+			current: boolean, default:false, nn
+			table_order: int, nn
+		session:
+			sid: varchar(255), nn, primarykey, deferrable:false
+			sess: string
+			expire: TIMESTAMP, default("current_timestamp")
+
+Folder/File Descriptions:
+	/backend:
+		/db: IMPORTANT contains the javascript that deals with the sql queries and functions that the routes use
+			/chat.js: create - query to insert into chat db
+			/connection.js: nothingyet
+			/games.js: list - gets the list of games...
+				   create - creates a game in the db with default values - returns the game id
+				   creatingUser - get the creating user from a game
+				   join - gets the highest table order from the game, and inserts a user into game_user with +1 table order
+				   getUsers - gets the id and username from the game_users that match the game
+		  	/users.js: create - inserts a user into the user table
+		  		   findByEmail - self explanitory
+
+		/middleware: holds middleware
+			/add-session-locals.js: addSessionLocals - makes the app.locals.user = session.user
+			/is-authenticated.js: isAuthenticated - gets the user from the session, 
+								if the user is undefined or user id is undefined, then continue, 
+								if not, redirect to login
+			/request-time.js: Sends the Request recieved at Datetime to console
+
+		/routes/static:
+			/authentication.js: 
+			/chat.js
+			/games.js
+			/home.js
+			/lobby.js
+			/test.js
+
+	constants:
+	frontend:
+	migrations:
+	node_modules:
+	
+
+Quick Notes:
+	Get vs Post: Get is done when the route is requested. Post is done after the page is already loaded, and you are leaving it. 
+
+Project Notes:
+	 	
+Refer to TeamMeow's Repository. They are doing things well.
+Refer to 5/4 Class -> He worked on TeamQ -> Sockets...	
+	
+The Game is run in the Games Page
+Three Sections:
+1. Nav Bar -> Home, Loby, logout, profile
+2. All the players in the game each players cards, deck, colorcard.
+	a.One player
+	b.The persons cards
+		i. number: 0-9
+		ii.color: "red", "blue", "green", "yellow"
+	c.What is the top the card on the pile 
