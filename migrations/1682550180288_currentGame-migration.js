@@ -4,7 +4,7 @@
  * @param {import("node-pg-migrate/dist/types").MigrationBuilder} pgm
  */
 exports.up = pgm => {
-  pgm.createTable("currentgame", {
+  pgm.createTable("current_game", {
     game_id: {
       type: "int",
       notNull: true,
@@ -23,7 +23,7 @@ exports.up = pgm => {
       notNull: true,
     },
     current_color:{
-      type:"varchar(256)",
+      type:"varchar(256)",      
       notNull:true,
     },
     current_direction:{
@@ -38,5 +38,5 @@ exports.up = pgm => {
  * @param {import("node-pg-migrate/dist/types").MigrationBuilder} pgm
  */
 exports.down = pgm => {
-  pgm.dropTable("currentgame");
+  pgm.dropTable("current_game");
 };

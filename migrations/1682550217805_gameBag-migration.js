@@ -13,11 +13,11 @@ exports.up = pgm => {
       type:"varchar(256)",
       notNull:true,
     },
-    game_id: {
+    gameid: {
       type: "int",
       notNull: true,
     },
-    player_id: {
+    userid: {
       type: "int",
       notNull: true,
     },

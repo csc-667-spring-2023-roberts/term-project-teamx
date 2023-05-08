@@ -8,7 +8,7 @@ router.get("/", async (request, response) => {
 
   response.render("lobby", {
     title: "Team X term project",
-    games: await Games.list(user_id),
+    games: await Games.getGames(user_id),
   });
 });
 
