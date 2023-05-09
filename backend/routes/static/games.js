@@ -21,6 +21,7 @@ router.post("/create", async (request, response) => {
 
 router.get("/:id", async (request, response) => {
   const { id: game_id } = request.params;
+  console.log(game_id);
 
   try {
     const { username: creating_user } = await Games.creatingUser(game_id);
@@ -59,7 +60,7 @@ router.get("/:id/join", async (request, response) => {
     io.emit(GAMES.PLAYER_JOINED(game_id), { username });
     await Games.join(user_id, game_id);
 
-    console.log(Games.start());
+    //console.log(Games.start());
 
     response.redirect(`/games/${game_id}`);
   } catch (error) {
@@ -70,7 +71,7 @@ router.get("/:id/join", async (request, response) => {
   }
 });
 
-router.post("/:id/start", async (request, response) =>{
+router.get("/:id/start", async (request, response) =>{
 
   const {id : game_id} = request.params;
   await Games.start(game_id);
