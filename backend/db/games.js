@@ -11,6 +11,9 @@ const JOIN_GAME = "INSERT INTO game_users (game_id, user_id, table_order) VALUES
 const COUNT_PLAYERS = "SELECT COUNT(table_order) FROM game_users WHERE game_id=$1";
 const MAX_TABLE_ORDER = "SELECT MAX(table_order) FROM game_users WHERE game_id=$1";
 
+//Users and Game-Users SQL Queries
+const GET_USERS = "SELECT id, username FROM users, game_users WHERE game_users.game_id=$1 AND game_users.user_id=users.id";
+
 //Game and Game-Users SQL Queries
 const CREATING_USER_SQL = "SELECT username FROM users, game_users WHERE game_users.game_id=$1 AND table_order=0 AND game_users.user_id=users.id";
 
@@ -40,25 +43,25 @@ const join = async (user_id, game_id) => {
   await db.none(JOIN_GAME, [game_id, user_id, max + 1]);
 };
 
-const getUsers = (game_id) =>
-  db.any(
-    "SELECT id, username FROM users, game_users WHERE game_users.game_id=$1 AND game_users.user_id=users.id",
-    [game_id]
-  );
+//Gets Users from Users/Game-Users in a Game
+const getUsers = (game_id) => db.any(GET_USERS, [game_id]);
 
+//Gets Games that a User is not currently in that is Not Currently Ongoing
 const getAvailableGames = (user_id) => db.any(AVAILABLE_GAMES_LIST,[user_id]);
 
+//Gets Games that a User is not currently in that is Currently Ongoing
 const getRunningGames = (user_id) => db.any(RUNNING_GAMES,[user_id]);
 
+//Get games that User is currently in (game_users)
 const getGames = (user_id) => db.any(USER_GAMES,[user_id]);
 
-const getAllGames = async () => {
-  console.log("in getAllGamesMethod")
-  return await db.any("select id from game");
-};
+//Get all games
+const getAllGames = async () => { return await db.any("SELECT id FROM game"); };
 
+//This needs to be explained or named
 let map = new Map;
 
+//Needs work
 const start = async (game_id) => {
 
   const colors=["blue","green","yellow","red"];
