@@ -31,7 +31,21 @@ Database Breakdown:
 			created_at: timestamp, nn, default("current_timestamp")
 		game:
 			id: id
+			is_started: boolean, nn, default(false)
 			created_at: timestamp, nn, default("current_timestamp")
+		current_game:
+			game_id: int, nn
+			player_count: int, nn
+			lastupdated: timestamp, nn, default("current_timestamp")
+			current _number: int, nn
+			current_color: varchar(256), nn
+			current_direction: boolean, nn
+		gamebag:
+			value: varchar(256)
+			color: varchar(256)
+			gameid: int, nn
+			userid: int, nn
+			specialcond: boolean, nn
 		game_users:
 			user_id: int, nn
 			game_id: int, nn
