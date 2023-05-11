@@ -3345,9 +3345,6 @@
           }
         );
       });
-      document.querySelector("#draw-pile").addEventListener("click", (_event) => {
-        fetch(`/games/${game_id}/draw`, { method: "post" });
-      });
     }
   });
   require_games();

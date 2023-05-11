@@ -21,16 +21,12 @@ const RUNNING_GAMES = "select id from game where is_started=true and id in (sele
 
 
 const create = async (user_id) => {
-  console.log("hi");
   const { id } = await db.one(CREATE_SQL);
 
   console.log(await db.any("select * from game where id=$1",[id]));
-
   console.log({ game_id_created: id });
 
   await db.none(ADD_USER_SQL, [user_id, id, 0]);
-
-  await db.none(JOIN_GAME,[id, user_id, ]);
 
   return { id };
 };

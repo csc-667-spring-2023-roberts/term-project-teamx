@@ -9,10 +9,7 @@
       Lobby Page (Authenticated) - Hi <%= user.username %> (<%= user.id %>)
     </h1>
 
-    <div>
-      <p>idnfaslnd</p>
-    </div>
-
+    <!-- Nav Bar -->
     <ul>
       <li><a href="/">Home</a></li>
       <li><a href="/authentication/login">Login</a></li>
@@ -22,27 +19,28 @@
       <li><a href="/games">UNO</a></li>
     </ul>
 
+    <!-- Game List-->
     <div id="games-list">
+
+      <!-- Game Create Button -->
       <form method="post" action="/games/create">
         <input type="submit" value="Create Game" />
-        <% if(games.length > 0) { %>
-        <% for(game of games) { %>
-        <a href="/games/<%= game.id %>/join">Join <%= game.id %> hello</a>
-        <% } }%>
-        <% if( games.length < 1 ) { %>
-          <p>No Games are Available to Join, instead create one</p>
-        <% } %>
       </form>
+
+      <!-- Available Games -->
+      <% if(games.length > 0) { %>
+        <% for(game of games) { %>
+          <a href="/games/<%= game.id %>/join">Join <%= game.id %></a>
+        <% }%>
+      <% } %>
+      <% if( games.length < 1 ) { %>
+        <p>No Games are Available to Join, instead create one</p>
+      <% } %>
     </div>
 
-    <div>
-
-    </div>
-
-    
-
-
-
+    <!-- Chat Area -->
+    <div id="chat">Chat area</div>
+    <!-- Chat Box -->
     <div id="chat-container">
       <div id="messages"></div>
       <label>
@@ -50,6 +48,7 @@
       </label>
     </div>
 
+    <!-- Chat Message -->
     <template id="chat-message-template">
       <div>
         <span class="username"></span>
@@ -57,27 +56,6 @@
         <span class="timestamp"></span>
       </div>
     </template>
-  </body>
-</html>
 
-
-
-
-<html lang="en">
-  <title>
-
-  </title>
-  <body>
-    
-    <div id="navigation">
-
-      <%- include('gamepage/unogame') %>
-    </div>
-    <div >
-all the players in the game, each player cards, color , deck , colorcard, 
-    </div>
-    <div>
-
-    </div>
   </body>
 </html>
