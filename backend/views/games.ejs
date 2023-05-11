@@ -11,8 +11,18 @@
       <input type="submit" value="Exit"/>
 
     <div id="game">
-      Game: <%= game_id %>
-
+      Game area
+      <div id="start-game">
+        Start game
+      </div>
+    
+      <!-- <div id="start-button">
+        <form method="post" action="/games/start">
+          <input type="submit" value="Start Game"/>
+          <a href="/games/<%= game_id %>/start">Start <%= game_id %></a>
+        </form>
+      </div>
+    -->
       <div id="draw-pile">I'm the draw pile make me pretty</div>
 
       <div id="users">
@@ -23,7 +33,8 @@
       </div>
     </div>
 
-    <!-- A User -->
+    
+
     <template id="user-template">
       <div class="user">
         <span class="username"></span>

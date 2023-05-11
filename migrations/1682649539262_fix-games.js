@@ -6,7 +6,6 @@ exports.shorthands = undefined;
  * @param {import("node-pg-migrate/dist/types").MigrationBuilder} pgm
  */
 exports.up = (pgm) => {
-  pgm.dropColumn("game", "userid");
 
   pgm.createTable("game_users", {
     user_id: {
