@@ -39,8 +39,6 @@ const CREATING_USER_SQL = "SELECT username FROM users, game_users WHERE game_use
 
 const creatingUser = async (game_id) => db.one(CREATING_USER_SQL, [game_id]);
 
-const JOIN_GAME =
-  "INSERT INTO game_users (game_id, user_id, table_order) VALUES ($1, $2, $3)";
 const join = async (user_id, game_id) => {
 
   const { max } = await db.one(
