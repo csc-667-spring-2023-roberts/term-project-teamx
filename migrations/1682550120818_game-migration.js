@@ -4,15 +4,10 @@
 exports.up = pgm => {
   pgm.createTable("game", {
     id: "id",
-    gameid: {
-      type: "varchar(256)",
+    is_started: {
+      type: "boolean",
       notNull: true,
-      unique: true,
-    },
-    userid: {
-      type: "varchar(256)",
-      notNull: true,
-      unique: true,
+      default: false,
     },
     created_at: {
       type: "timestamp",

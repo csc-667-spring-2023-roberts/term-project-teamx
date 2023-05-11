@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-if (process.env.NODE_ENV === "development") {
+//if (process.env.NODE_ENV === "development") {
   const livereload = require("livereload");
   const connectLiveReload = require("connect-livereload");
 
@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === "development") {
   });
 
   app.use(connectLiveReload());
-}
+//}
 
 const sessionMiddleware = session({
   store: new pgSession({ pgPromise: db }),
