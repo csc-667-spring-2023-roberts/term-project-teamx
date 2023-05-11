@@ -112,16 +112,41 @@ Project Interaction/Construction Flow:
 	This can hopefully help make more sense of how the project interacts with itself, and in turn make developing to it easier/make more sense
 	
 	Case: Index Page Requested
-		1. Server.js routes the user to start at the routes/static/home.js
-		2. routes/static/home.js gets the requested route and renders the home.ejs with dynamically inserted data via js
+		1. Server.js routes the user to start at routes/static/home.js
+		2. routes/static/home.js gets the requested page and renders the home.ejs with dynamically inserted data via js
 	
 	Case: User uses Register page to register to site
+		1. Server.js routes the user to start at route/static/authentication.js
+		2. route/static/authentication.js gets the requested page and renders the registration.ejs with dynamically inserted data via js
+		3. after the user enters thier data into the form, and clicks submit, post is sent to route/static/authentication.js
+		4. the post function creates an entry into the database using backend/db/users.js
+		5. the post function then redirects to the route/static/lobby.js
+		6. route/static/lobby.js gets the requested page and renders the lobby.ejs with dynamically inserted data via js		
 
 	Case: User enters something into chat and clicks enter
+		1. The user is currently in the lobby.ejs and games.ejs
+		2. The user enters text into the chatMessage input
+		3. The event is caught at frontend/index.js
+		4. Data is collected and routed to route/static/chat.js
+		5. an event is emitted by chat.js
+		6. the event is picked up by the socket, and caught in frontend/index.js
+		7. frontend/index.js clones the chatMessageTemplate, fills it with the data, and appends it to the html
 
 	Case: User creates a game
+		1. Server.js routes the user to start at route/static/lobby.js
+		2. route/static/lobby.js gets the requested page and renders the lobby.ejs with dynamically inserted data via js
+		3. the games object that is dynamically inserted is pulled by the database via backend/db/games.js
+		4. the user clicks the Create Game submit button on the lobby.ejs page
+		5. the button is a post method that has the action /games/create
+		6. route/static/games.js deals with this
+		7. route/static/games.js uses the post /create method
+		8. post /create method creates a Game using backend/db/games.js
+		9. the user then will be redirected to that /games/:id
+		10.the creating user would be pulled from backend/db/games.js
+		11.then games.ejs will be rendered with dynamically inserted datab via js (creatinguser, gameid)
 
 	Case: User joins a game
+		1. 
 
 Quick Notes:
 	Get vs Post: Get is done when the route is requested. Post is done after the page is already loaded, and you are leaving it. 
