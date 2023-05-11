@@ -9,7 +9,6 @@ router.post("/create", async (request, response) => {
 
   try {
     const { id: game_id } = await Games.create(user_id);
-    console.log("calling games start")
 
     response.redirect(`/games/${game_id}`);
   } catch (error) {
@@ -26,7 +25,7 @@ router.get("/:id", async (request, response) => {
   try {
     const { username: creating_user } = await Games.creatingUser(game_id);
 
-    response.render("games", { creating_user });
+    response.render("games", { creating_user, game_id });
   } catch (error) {
     console.log({ error });
 
@@ -77,7 +76,7 @@ router.get("/:id/start", async (request, response) =>{
   await Games.start(game_id);
 
   const io = request.app.get("io");
-
+  
   try {
     // Make sure user is in the game
 
@@ -153,6 +152,18 @@ router.post("/:id/draw", async (request, response) => {
 
     response.status(500).send();
   }
+});
+
+router.post("/start", async (request, response) => { 
+  console.log("Start Button Called");
+});
+
+
+router.post("/exit", async (request,response)=>{
+  console.log("Exit Button Called");
+  console.log("Player must be removed from the player-game list");
+
+  response.redirect("/lobby");
 });
 
 module.exports = router;
