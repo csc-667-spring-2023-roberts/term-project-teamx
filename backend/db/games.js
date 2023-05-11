@@ -23,13 +23,13 @@ const GAMEBAG = "INSERT INTO gamebag (value, color, gameid, userid, specialcard 
 //Create a Game
 //Insert the creating User into the game_users table
 const create = async (user_id) => {
-  const { game_id } = await db.one(CREATE_SQL);
+  //Create a Game
+  const {id} = await db.one(CREATE_SQL);
 
-  console.log(await db.any("select * from game where id=$1",[id]));
-  console.log({ game_id_created: id });
-
-  await db.none(JOIN_GAME, [game_id, user_id, 0]);
-
+  //Add the Player to the Game
+  await db.none(JOIN_GAME, [id, user_id, 0]);
+  
+  //Return the Game_Id
   return { id };
 };
 
