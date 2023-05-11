@@ -3298,8 +3298,10 @@
   var require_constants = __commonJS({
     "backend/sockets/constants.js"(exports, module) {
       var CHAT_MESSAGE_RECEIVED = "chat-message-received";
+      var MAX_PLAYERS = 2;
       module.exports = {
-        CHAT_MESSAGE_RECEIVED
+        CHAT_MESSAGE_RECEIVED,
+        MAX_PLAYERS
       };
     }
   });

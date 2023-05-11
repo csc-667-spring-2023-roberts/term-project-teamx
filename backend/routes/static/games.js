@@ -24,7 +24,7 @@ router.get("/:id", async (request, response) => {
   try {
     const { username: creating_user } = await Games.creatingUser(game_id);
 
-    response.render("games", { creating_user });
+    response.render("games", { creating_user, game_id });
   } catch (error) {
     console.log({ error });
 

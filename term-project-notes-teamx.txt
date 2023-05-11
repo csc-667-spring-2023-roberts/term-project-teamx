@@ -1,0 +1,142 @@
+Title: Term Project Notes TeamX
+Class: CSC 667/867
+Project: UNO
+Team: X
+Team-Members: Andy Almeida - pie240, Arjun - Kepler, Tyler - Tydershot, *KARMA
+
+Set-Up:
+	1.Install Node.js
+	2.Install PostgreSQL
+	3.Git Fetch the Repo: https://github.com/csc-667-spring-2023-roberts/term-project-teamx.git
+	4.Create a .env file in the folder
+	5.Add to the .env file: 
+		DATABASE_URL=postgres://USERNAME:PASSWORD@localhost:5432/team-x
+		SECRET=mySecretKey
+	5.npm init
+	6.npm install
+	7.npm run start:dev
+	8.The server should be runnable, and you can add to the code. When you save the project, it will immediately 
+	9.You can connect to the website via http://localhost:3000
+
+Database Breakdown:
+	Tables:
+		test_table:
+			id: id
+			created_at: timestamp, nn, default("current_timestamp")
+		users:
+			id: id
+			username: varchar(256), nn, unique
+			email: varchar(256), nn, unique
+			password: char(60), nn
+			created_at: timestamp, nn, default("current_timestamp")
+		game:
+			id: id
+			created_at: timestamp, nn, default("current_timestamp")
+		game_users:
+			user_id: int, nn
+			game_id: int, nn
+			current: boolean, default:false, nn
+			table_order: int, nn
+		session:
+			sid: varchar(255), nn, primarykey, deferrable:false
+			sess: string
+			expire: TIMESTAMP, default("current_timestamp")
+
+Folder/File Descriptions:
+	/backend:
+		/db: IMPORTANT contains the javascript that deals with the sql queries and functions that the routes use
+			/chat.js: create - query to insert into chat db
+			/connection.js: nothingyet
+			/games.js: list - gets the list of games...
+				   create - creates a game in the db with default values - returns the game id
+				   creatingUser - get the creating user from a game
+				   join - gets the highest table order from the game, and inserts a user into game_user with +1 table order
+				   getUsers - gets the id and username from the game_users that match the game
+		  	/users.js: create - inserts a user into the user table
+		  		   findByEmail - self explanitory
+
+		/middleware: holds middleware
+			/add-session-locals.js: addSessionLocals - makes the app.locals.user = session.user
+			/is-authenticated.js: isAuthenticated - gets the user from the session, 
+								if the user is undefined or user id is undefined, then continue, 
+								if not, redirect to login
+			/request-time.js: Sends the Request recieved at Datetime to console
+
+		/routes/static:
+			/authentication.js: has routes for registration and login pages, deals heavily with account authentication
+			/chat.js: has a function to emit a chat message event that works with the socket
+			/games.js: functions that deal with the game webpage creation (create, join) and functionality (draw, )
+			/home.js: single function to route the html with a simple html injection
+			/lobby.js: single function to route the html with a simple html injection and awaits the games list
+			/test.js: test page to test html injections
+		
+		/static: contains the bundle that the website uses. this is constructed after?? no real need to mess with...
+			/scripts: contains the bundle, big and scary, dont mess with...
+			/stylesheets: contains css for the page
+			/favicon.ico: the pages icon
+		
+		/views: the base html that is called by the routes
+			/games.ejs: html - hold the games, includes templates for js calls= (templates: user, card, chatmessage)
+			/home.ejs: base page with all links
+			/lobby.ejs: has a space for chat and the list of games that are available to join (templates: chat)
+			/login.ejs: login form to log in
+			/register.ejs: registration form to register
+
+		/server.js: The main routing for the server. Would not really mess with unless you make more pages...
+	
+	/constants: holds a file that contains constants for the whole project
+		/events.js: so far, contains two constants for events: playerjoined and gamestateupdated
+
+	/frontend: frontend
+		/css: css for the website
+			/index.css: css for the website
+		
+		/games: js that is actually called by the html
+			/index.js: js that is called by the html
+		
+		/util: small utilities for the html
+			/game-ids.js: returns the gameId
+
+		/index.js: js that is called by the html
+
+	/migrations: the code the handles the Postgres database. It creates the tables. Refer to the database build above
+
+	/node_modules: the modules that the project uses. Use npm to deal with this
+
+	/.env: contains the connection to the database. this must be created whenever a fresh pull from github is made
+
+	the rest of the files will either not be messed with for this project, or do not require explination
+
+Project Interaction/Construction Flow:
+	The purpose for this is to better visualise the flow of how the whole project is dealing with these cases; 
+	This can hopefully help make more sense of how the project interacts with itself, and in turn make developing to it easier/make more sense
+	
+	Case: Index Page Requested
+		1. Server.js routes the user to start at the routes/static/home.js
+		2. routes/static/home.js gets the requested route and renders the home.ejs with dynamically inserted data via js
+	
+	Case: User uses Register page to register to site
+
+	Case: User enters something into chat and clicks enter
+
+	Case: User creates a game
+
+	Case: User joins a game
+
+Quick Notes:
+	Get vs Post: Get is done when the route is requested. Post is done after the page is already loaded, and you are leaving it. 
+
+Project Notes:
+
+Refer to TeamMeow's Repository. They are doing things well.
+Refer to 5/4 Class -> He worked on TeamQ -> Sockets...	
+	
+The Game is run in the Games Page
+Three Sections:
+1. Nav Bar -> Home, Loby, logout, profile
+2. All the players in the game each players cards, deck, colorcard.
+	a.One player
+	b.The persons cards
+		i. number: 0-9
+		ii.color: "red", "blue", "green", "yellow"
+	c.What is the top the card on the pile 

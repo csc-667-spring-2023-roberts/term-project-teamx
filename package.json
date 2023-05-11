@@ -1,7 +1,7 @@
 {
   "name": "term-project-teamx",
   "version": "1.0.0",
-  "description": "This is a game created by Andy, Arjun, Tyler, and KARMA. This game will be a low level implementation of UNO. The stack consists of HTML, CSS, and JS.",
+  "description": "This is a game created by Andy, Arjun, and Tyler. This game will be a low level implementation of UNO. The stack consists of HTML, CSS, and JS.",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
