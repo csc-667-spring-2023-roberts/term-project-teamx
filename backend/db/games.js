@@ -1,49 +1,43 @@
 const db = require("./connection.js");
 
-const gamebag = "INSERT INTO gamebag (value, color, gameid, userid, specialcard ) VALUES ($1, $2, $3, $4, $5)";
-
+//Game SQL Queries
 const CREATE_SQL = "INSERT INTO game DEFAULT VALUES RETURNING id";
+const USER_GAMES = "SELECT id FROM game WHERE id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
+const RUNNING_GAMES = "SELECT id FROM game WHERE is_started=true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
+const AVAILABLE_GAMES_LIST = "SELECT id FROM game WHERE is_started=false AND id NOT IN (SELECT game_id FROM game_users WHERE user_id=$1)";
 
-const ADD_USER_SQL = "INSERT INTO game_users (user_id, game_id, table_order) VALUES ($1, $2, $3)";
-
-const COUNT_PLAYERS="select count(table_order) from game_users where game_id=$1";
-
+//Game-Users SQL Queries
 const JOIN_GAME = "INSERT INTO game_users (game_id, user_id, table_order) VALUES ($1, $2, $3)";
+const COUNT_PLAYERS = "SELECT COUNT(table_order) FROM game_users WHERE game_id=$1";
+const MAX_TABLE_ORDER = "SELECT MAX(table_order) FROM game_users WHERE game_id=$1";
 
-const AVVAILABLE_GAMES_LIST = "select id from game where is_started=false and id not in (select game_id from game_users where user_id=$1)";
+//Game and Game-Users SQL Queries
+const CREATING_USER_SQL = "SELECT username FROM users, game_users WHERE game_users.game_id=$1 AND table_order=0 AND game_users.user_id=users.id";
 
-const USER_GAMES = "select id from game where id in (select game_id from game_users where user_id=$1)";
+//GameBag SQL Queries
+const GAMEBAG = "INSERT INTO gamebag (value, color, gameid, userid, specialcard ) VALUES ($1, $2, $3, $4, $5)";
 
-const RUNNING_GAMES = "select id from game where is_started=true and id in (select game_id from game_users where user_id=$1)";
-
-
-
-
-
+//Create a Game
+//Insert the creating User into the game_users table
 const create = async (user_id) => {
-  const { id } = await db.one(CREATE_SQL);
+  const { game_id } = await db.one(CREATE_SQL);
 
   console.log(await db.any("select * from game where id=$1",[id]));
   console.log({ game_id_created: id });
 
-  await db.none(ADD_USER_SQL, [user_id, id, 0]);
+  await db.none(JOIN_GAME, [game_id, user_id, 0]);
 
   return { id };
 };
 
-const CREATING_USER_SQL = "SELECT username FROM users, game_users WHERE game_users.game_id=$1 AND table_order=0 AND game_users.user_id=users.id";
-
+//Gets the Creating User of a game
 const creatingUser = async (game_id) => db.one(CREATING_USER_SQL, [game_id]);
 
+//Adds a User to a Game_Users game with +1 table_order
 const join = async (user_id, game_id) => {
-
-  const { max } = await db.one(
-    "SELECT MAX(table_order) FROM game_users WHERE game_id=$1",
-    [game_id]
-  );
+  const { max } = await db.one( MAX_TABLE_ORDER, [game_id]);
 
   await db.none(JOIN_GAME, [game_id, user_id, max + 1]);
-
 };
 
 const getUsers = (game_id) =>
@@ -52,7 +46,7 @@ const getUsers = (game_id) =>
     [game_id]
   );
 
-const getAvailableGames = (user_id) => db.any(AVVAILABLE_GAMES_LIST,[user_id]);
+const getAvailableGames = (user_id) => db.any(AVAILABLE_GAMES_LIST,[user_id]);
 
 const getRunningGames = (user_id) => db.any(RUNNING_GAMES,[user_id]);
 
@@ -71,13 +65,13 @@ const start = async (game_id) => {
 
   colors.forEach(async element => {
     for(let i=0;i<10;i++){
-      await db.none(gamebag,[i.toString(),element,game_id,0,'FALSE']);
+      await db.none(GAMEBAG,[i.toString(),element,game_id,0,'FALSE']);
     }
-    await db.none(gamebag,["2",element,game_id,0,'TRUE']);
-    await db.none(gamebag,["0",element,game_id,0,'TRUE']);
-    await db.none(gamebag,["-1",element,game_id,0,'TRUE']);
-    await db.none(gamebag,["4","nocolor",game_id,0,'TRUE']);
-    await db.none(gamebag,["0","nocolor",game_id,0,'TRUE']);
+    await db.none(GAMEBAG,["2",element,game_id,0,'TRUE']);
+    await db.none(GAMEBAG,["0",element,game_id,0,'TRUE']);
+    await db.none(GAMEBAG,["-1",element,game_id,0,'TRUE']);
+    await db.none(GAMEBAG,["4","nocolor",game_id,0,'TRUE']);
+    await db.none(GAMEBAG,["0","nocolor",game_id,0,'TRUE']);
   });
 
   //console.log(await db.multi("select player_id from gamebag where game_id=$1",[game_id]));
