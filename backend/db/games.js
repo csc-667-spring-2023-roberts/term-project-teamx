@@ -27,6 +27,10 @@ const DELETE_USER_GAME = "DELETE FROM game_users where user_id=$1 AND game_id=$2
 
 const UPDATE_IS_ALIVE = "UPDATE game SET is_alive=false where $id = $1";
 
+const UPDATE_GAMEBAG_USERID = "UPDATE gamebag SET userid = $1 WHERE gameid=$2 AND value=$3 AND color=$4 AND specialcard=$5";
+
+const SELECT_RANDOMCARDS = "SELECT * FROM gamebag WHERE gameid=$1 AND userid=$2 ORDER BY RANDOM() LIMIT $3";
+
 //Create a Game
 //Insert the creating User into the game_users table
 const create = async (user_id) => {
@@ -113,7 +117,7 @@ const start = async (game_id) => {
 
   let shuffle_cards;
 
-  await db.multi("select * from gamebag where gameid=$1 order by random() LIMIT $2",[game_id,player_count*7]).then(
+  await db.multi(SELECT_RANDOMCARDS,[game_id,0,player_count*7]).then(
     data=>{
       shuffle_cards = data[0];
     }
@@ -131,23 +135,29 @@ const start = async (game_id) => {
   console.log(shuffle_cards.length);
 
   shuffle_cards.forEach( async card => {
-    await db.none("update gamebag set userid = $1 where gameid=$2 and value=$3 and color=$4 and specialcard=$5",[map.get(count%player_count),card["gameid"],card["value"],card["color"],card["specialcard"]]);
+    await db.none(UPDATE_GAMEBAG_USERID,[map.get(count%player_count),card["gameid"],card["value"],card["color"],card["specialcard"]]);
     count=count+1;
   })
 
-  console.log(await db.any("select count(*) from gamebag where gameid=$1",[game_id]));
+  const deck_card = db.one(SELECT_RANDOMCARDS,[game_id,0,1])
 
-  console.log(await db.any("select * from gamebag where gameid=$1",[game_id]));
-  console.log("hi dfksalj")
-  console.log(await db.any("select * from gamebag where userid != $1 and gameid = $2", [0,game_id]));
-
-  //console.log(shuffle_cards);
-  console.log(player_count);
-  console.log("start");
-  
+  await db.none(UPDATE_GAMEBAG_USERID,[-1,deck_card["gameid"],deck_card["value"],deck_card["color"],deck_card["specialcard"]]);
   
 }
+
+// const nextTurn = async (user_id, count) => {
+//    updating the players turn in the next git commit changes
+// }
   
+const putOneCardintoDeck = async (card) => {
+  await db.none(UPDATE_GAMEBAG_USERID,[0,card["gameid"],card["value"],card["color"],card["specialcard"]]);
+}
+
+const getOneCardFromDeck = async (user_id,game_id,count) => {
+  const card = await db.one(SELECT_RANDOMCARDS,[game_id,0,count]);
+  await db.none(UPDATE_GAMEBAG_USERID,[user_id,card["gameid"],card["value"],card["color"],card["specialcard"]]);
+  return { card }
+}
 
 const exitFromGameLobby = async (user_id,game_id) => {
   //getting the player count from the game
@@ -160,7 +170,6 @@ const exitFromGameLobby = async (user_id,game_id) => {
     await db.none(UPDATE_IS_ALIVE,[game_id])
   }
 }
-
 
 
 module.exports = {
@@ -176,4 +185,6 @@ module.exports = {
   getEverythingGames,
   getEverythingGameUsers,
   exitFromGameLobby,
+  putOneCardintoDeck,
+  getOneCardFromDeck,
 };
