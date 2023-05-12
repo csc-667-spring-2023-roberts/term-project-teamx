@@ -57,7 +57,7 @@ router.get("/:id/join", async (request, response) => {
   }
 });
 
-router.get("/:id/start", async (request, response) =>{
+router.post("/:id/start", async (request, response) =>{
 
   const {id : game_id} = request.params;
   await Games.start(game_id);
@@ -140,7 +140,6 @@ router.post("/:id/draw", async (request, response) => {
     response.status(500).send();
   }
 });
-
 
 router.post("/exit/:id", async (request,response)=>{
   const { id: user_id } = request.session.user;
