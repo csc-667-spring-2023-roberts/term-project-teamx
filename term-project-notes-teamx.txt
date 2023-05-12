@@ -5,18 +5,19 @@ Team: X
 Team-Members: Andy Almeida - pie240, Arjun - Kepler, Tyler - Tydershot, *KARMA
 
 Set-Up:
-	1.Install Node.js
-	2.Install PostgreSQL
-	3.Git Fetch the Repo: https://github.com/csc-667-spring-2023-roberts/term-project-teamx.git
-	4.Create a .env file in the folder
-	5.Add to the .env file: 
-		DATABASE_URL=postgres://USERNAME:PASSWORD@localhost:5432/team-x
-		SECRET=mySecretKey
-	5.npm init
-	6.npm install
-	7.npm run start:dev
-	8.The server should be runnable, and you can add to the code. When you save the project, it will immediately 
-	9.You can connect to the website via http://localhost:3000
+	1. Install Node.js
+	2. Install PostgreSQL
+	3. Git Fetch the Repo: https://github.com/csc-667-spring-2023-roberts/term-project-teamx.git
+	4. Create a .env file in the folder
+	5. Add to the .env file: 
+		 DATABASE_URL=postgres://USERNAME:PASSWORD@localhost:5432/team-x
+		 SECRET=mySecretKey
+	6. createdb team-x
+	7. npm init
+	8. npm install
+	9. npm run start:dev
+	10.The server should be runnable, and you can add to the code. When you save the project, it will immediately 
+	11.You can connect to the website via http://localhost:3000
 
 Database Breakdown:
 	Tables:
