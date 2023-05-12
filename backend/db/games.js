@@ -4,12 +4,13 @@ const db = require("./connection.js");
 const CREATE_SQL = "INSERT INTO game DEFAULT VALUES RETURNING id";
 const USER_GAMES = "SELECT id FROM game WHERE id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
 const RUNNING_GAMES = "SELECT id FROM game WHERE is_started=true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
-const AVAILABLE_GAMES_LIST = "SELECT id FROM game WHERE is_started=false AND id NOT IN (SELECT game_id FROM game_users WHERE user_id=$1)";
+const AVAILABLE_GAMES_LIST = "SELECT id FROM game WHERE is_started=false AND user_id = $1 NOT IN (SELECT game_id FROM game_users)";
 
 //Game-Users SQL Queries
 const JOIN_GAME = "INSERT INTO game_users (game_id, user_id, table_order) VALUES ($1, $2, $3)";
 const COUNT_PLAYERS = "SELECT COUNT(table_order) FROM game_users WHERE game_id=$1";
 const MAX_TABLE_ORDER = "SELECT MAX(table_order) FROM game_users WHERE game_id=$1";
+const GET_EVERYTHING_GAME_USERS = "SELECT * FROM game_users";
 
 //Users and Game-Users SQL Queries
 const GET_USERS = "SELECT id, username FROM users, game_users WHERE game_users.game_id=$1 AND game_users.user_id=users.id";
@@ -24,7 +25,7 @@ const GAMEBAG = "INSERT INTO gamebag (value, color, gameid, userid, specialcard 
 //Insert the creating User into the game_users table
 const create = async (user_id) => {
   //Create a Game
-  const {id} = await db.one(CREATE_SQL);
+  const { id } = await db.one(CREATE_SQL);
 
   //Add the Player to the Game
   await db.none(JOIN_GAME, [id, user_id, 0]);
@@ -57,6 +58,14 @@ const getGames = (user_id) => db.any(USER_GAMES,[user_id]);
 
 //Get all games
 const getAllGames = async () => { return await db.any("SELECT id FROM game"); };
+
+const getEverythingGames = async () => { return await db.any("SELECT * FROM game"); };
+
+const getEverythingGameUsers = async () => {return await db.any(GET_EVERYTHING_GAME_USERS); };
+
+const removeUserFromAllGames = async (user_id) => {
+  await db.none("DELETE FROM game_users WHERE user_id = $1", [user_id]);
+}
 
 //This needs to be explained or named
 let map = new Map;
@@ -148,4 +157,7 @@ module.exports = {
   getRunningGames,
   getGames,
   getAllGames,
+  getEverythingGames,
+  getEverythingGameUsers,
+  removeUserFromAllGames,
 };

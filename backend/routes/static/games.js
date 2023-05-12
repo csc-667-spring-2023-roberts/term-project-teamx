@@ -7,6 +7,8 @@ const router = express.Router();
 router.post("/create", async (request, response) => {
   const { id: user_id } = request.session.user;
 
+  Games.removeUserFromAllGames(user_id);
+
   try {
     const { id: game_id } = await Games.create(user_id);
 
