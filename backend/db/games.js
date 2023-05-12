@@ -21,6 +21,8 @@ const CREATING_USER_SQL = "SELECT username FROM users, game_users WHERE game_use
 //GameBag SQL Queries
 const GAMEBAG = "INSERT INTO gamebag (value, color, gameid, userid, specialcard ) VALUES ($1, $2, $3, $4, $5)";
 
+
+
 //Create a Game
 //Insert the creating User into the game_users table
 const create = async (user_id) => {
@@ -63,9 +65,7 @@ const getEverythingGames = async () => { return await db.any("SELECT * FROM game
 
 const getEverythingGameUsers = async () => {return await db.any(GET_EVERYTHING_GAME_USERS); };
 
-const removeUserFromAllGames = async (user_id) => {
-  await db.none("DELETE FROM game_users WHERE user_id = $1", [user_id]);
-}
+
 
 //This needs to be explained or named
 let map = new Map;
