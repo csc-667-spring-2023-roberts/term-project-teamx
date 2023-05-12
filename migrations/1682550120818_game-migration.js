@@ -9,6 +9,16 @@ exports.up = pgm => {
       notNull: true,
       default: pgm.func("current_timestamp"),
     },
+    is_started: {
+      type: "boolean",
+      notNull: true,
+      default: false,
+    },
+    is_alive : {
+      type: "boolean",
+      notNull: true,
+      default: true
+    }
   });
 };
 

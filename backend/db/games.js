@@ -21,7 +21,11 @@ const CREATING_USER_SQL = "SELECT username FROM users, game_users WHERE game_use
 //GameBag SQL Queries
 const GAMEBAG = "INSERT INTO gamebag (value, color, gameid, userid, specialcard ) VALUES ($1, $2, $3, $4, $5)";
 
+const GET_GAME_USERS_COUNT = "SELECT COUNT(*) FROM game_users WHERE game_id=$1";
 
+const DELETE_USER_GAME = "DELETE FROM game_users where user_id=$1 AND game_id=$2";
+
+const UPDATE_IS_ALIVE = "UPDATE game SET is_alive=false where $id = $1";
 
 //Create a Game
 //Insert the creating User into the game_users table
@@ -145,6 +149,18 @@ const start = async (game_id) => {
 }
   
 
+const exitFromGameLobby = async (user_id,game_id) => {
+  //getting the player count from the game
+  const player_count = await db.one(GET_GAME_USERS_COUNT,[game_id])
+  //deleting the user from the game
+  await db.none(DELETE_USER_GAME,[user_id,game_id])
+  //checking the player count, if it is 1 then the game should end and the game will be going to be in a dead state
+  if(player_count == 1){
+    //sets the game to dead mode by updating the is_alive to false
+    await db.none(UPDATE_IS_ALIVE,[game_id])
+  }
+}
+
 
 
 module.exports = {
@@ -159,5 +175,5 @@ module.exports = {
   getAllGames,
   getEverythingGames,
   getEverythingGameUsers,
-  removeUserFromAllGames,
+  exitFromGameLobby,
 };

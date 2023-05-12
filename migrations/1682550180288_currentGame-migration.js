@@ -30,6 +30,15 @@ exports.up = pgm => {
       type:"boolean",
       notNull:true,
     },
+    user_id: {
+      type: "int",
+      notNull: true,
+    },
+    current_buffer: {
+      type: "int",
+      notNull: true,
+      default: 0
+    }
   });
 
 };

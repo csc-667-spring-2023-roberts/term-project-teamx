@@ -37,18 +37,6 @@ router.get("/:id", async (request, response) => {
   }
 });
 
-router.get("/:id/ingame/", async (request,response)=>{
-  const { id: game_id } = request.params;
-  const { id: user_id } = request.session.user;
-
-  response.render("");
-  try {
-    
-  } catch (error) {
-    console.log({error});
-  }
-});
-
 
 
 router.get("/:id/join", async (request, response) => {
@@ -59,8 +47,6 @@ router.get("/:id/join", async (request, response) => {
   try {
     io.emit(GAMES.PLAYER_JOINED(game_id), { username });
     await Games.join(user_id, game_id);
-
-    //console.log(Games.start());
 
     response.redirect(`/games/${game_id}`);
   } catch (error) {
@@ -155,13 +141,13 @@ router.post("/:id/draw", async (request, response) => {
   }
 });
 
-router.post("/start", async (request, response) => { 
-  console.log("Start Button Called");
-});
 
+router.post("/exit/:id", async (request,response)=>{
+  const { id: user_id } = request.session.user;
+  const { id: game_id } = request.params;
 
-router.post("/exit", async (request,response)=>{
   console.log("Exit Button Called");
+  Games.exitFromGameLobby(user_id,game_id);
   console.log("Player must be removed from the player-game list");
 
   response.redirect("/lobby");
