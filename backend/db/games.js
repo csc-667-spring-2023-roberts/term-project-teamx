@@ -2,9 +2,9 @@ const db = require("./connection.js");
 
 //Game SQL Queries
 const CREATE_SQL = "INSERT INTO game DEFAULT VALUES RETURNING id";
-const USER_GAMES = "SELECT id FROM game WHERE id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
-const RUNNING_GAMES = "SELECT id FROM game WHERE is_started=true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
-const AVAILABLE_GAMES_LIST = "SELECT id FROM game WHERE is_started=false AND user_id = $1 NOT IN (SELECT game_id FROM game_users)";
+const USER_GAMES = "SELECT id FROM game WHERE is_alive=true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
+const RUNNING_GAMES = "SELECT id FROM game WHERE is_started=true AND is_alive=true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
+const AVAILABLE_GAMES_LIST = "SELECT game_id as id FROM game_users WHERE game_id NOT IN (SELECT game_id FROM game_users WHERE user_id=$1) AND game_id IN (SELECT id AS game_id FROM game WHERE is_started=false AND is_alive=true)";
 
 //Game-Users SQL Queries
 const JOIN_GAME = "INSERT INTO game_users (game_id, user_id, table_order) VALUES ($1, $2, $3)";
@@ -69,9 +69,6 @@ const getGames = (user_id) => db.any(USER_GAMES,[user_id]);
 //Get all games
 const getAllGames = async () => { return await db.any("SELECT id FROM game"); };
 
-const getEverythingGames = async () => { return await db.any("SELECT * FROM game"); };
-
-const getEverythingGameUsers = async () => {return await db.any(GET_EVERYTHING_GAME_USERS); };
 
 
 
@@ -182,8 +179,6 @@ module.exports = {
   getRunningGames,
   getGames,
   getAllGames,
-  getEverythingGames,
-  getEverythingGameUsers,
   exitFromGameLobby,
   putOneCardintoDeck,
   getOneCardFromDeck,

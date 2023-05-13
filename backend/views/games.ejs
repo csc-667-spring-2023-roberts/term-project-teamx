@@ -7,6 +7,12 @@
   </head>
   
   <body>
+    <div id="Lobby-button-in-gamepage">
+      <form action="/lobby" method="get">
+        <input type="submit" value="Lobby">
+      </form>
+    </div>
+
     <h1>Game Page (Authenticated)</h1>
     <h3>GameID:<%= game_id %></h3>
 
@@ -18,7 +24,7 @@
       </form>
 
       <!-- Start Button -->
-      <form method="get" action="/games/<%= game_id %>/start">
+      <form method="post" action="/games/<%= game_id %>/start">
         <input type="submit" value="Start"/>
       </form>
 
@@ -62,7 +68,7 @@
     </div>
 
     <!-- A Chat Message -->
-    <template id="chat-message-template">
+    <template id="chat-message-template" value="<%= game_id %>"">
       <div>
         <span class="username"></span>
         <span class="message"></span>

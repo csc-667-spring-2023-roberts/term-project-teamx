@@ -5,9 +5,12 @@ const Chat = require("../../db/chat.js");
 
 router.post("/:id/", async (request, response) => {
   const io = request.app.get("io");
+  const game_id = request.params.id;
   const { message } = request.body;
   const { username, id } = request.session.user;
   io.emit(events.CHAT_MESSAGE_RECEIVED, {
+    game_id,
+    id,
     message,
     username,
     timestamp: Date.now(),

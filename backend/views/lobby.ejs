@@ -28,6 +28,7 @@
       </form>
 
       <!-- Available Games -->
+      <h4>Available games to join</h4>
       <% if(games.length > 0) { %>
         <% for(game of games) { %>
           <a href="/games/<%= game.id %>/join">Join <%= game.id %></a>
@@ -37,6 +38,20 @@
         <p>No Games are Available to Join, instead create one</p>
       <% } %>
     </div>
+
+    <!-- ALready Joined Games -->
+    <div>
+      <h4>Your Games</h4>
+        <% if(joinedgames.length > 0) { %>
+          <% for(joinedgame of joinedgames) { %>
+            <a href="/games/<%= joinedgame.id %>/">Continue <%= joinedgame.id %></a>
+          <% }%>
+        <% } %>
+        <% if( joinedgame.length < 1 ) { %>
+          <p>No games joined, instead create one or Join one if available</p>
+        <% } %>
+    </div>
+    <br>
 
     <!-- Chat Area -->
     <div id="chat">Chat area</div>

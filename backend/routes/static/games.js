@@ -65,16 +65,6 @@ router.post("/:id/start", async (request, response) =>{
   const io = request.app.get("io");
   
   try {
-    // Make sure user is in the game
-
-    // Make sure its the users turn
-
-    // Make sure they haven't drawn
-
-    // Draw a card from the game_cards table
-
-    // Assemble game state for each user in game
-
     const users = await Games.getUsers(game_id);
 
     console.log({ users });
@@ -90,7 +80,7 @@ router.post("/:id/start", async (request, response) =>{
         hand: ["A1", "B2", "C3"],
       });
     });
-
+    
     response.status(200).send();
   } catch (error) {
     console.log({ error });
@@ -100,46 +90,7 @@ router.post("/:id/start", async (request, response) =>{
 
 })
 
-
-router.post("/:id/draw", async (request, response) => {
-  const { id: user_id } = request.session.user;
-  const { id: game_id } = request.params;
-  const io = request.app.get("io");
-
-  try {
-    // Make sure user is in the game
-
-    // Make sure its the users turn
-
-    // Make sure they haven't drawn
-
-    // Draw a card from the game_cards table
-
-    // Assemble game state for each user in game
-
-    const users = await Games.getUsers(game_id);
-
-    console.log({ users });
-
-    users.forEach((user) => {
-      console.log({ user });
-      console.log("Emitting for" + GAMES.GAME_STATE_UPDATED(game_id, user));
-      io.emit(GAMES.GAME_STATE_UPDATED(game_id, user.id), {
-        users,
-        current_user: user.id,
-        current_player: user.id,
-        top_discard: "B6",
-        hand: ["A1", "B2", "C3"],
-      });
-    });
-
-    response.status(200).send();
-  } catch (error) {
-    console.log({ error });
-
-    response.status(500).send();
-  }
-});
+router.post("/play/")
 
 router.post("/exit/:id", async (request,response)=>{
   const { id: user_id } = request.session.user;

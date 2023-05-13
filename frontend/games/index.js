@@ -17,7 +17,7 @@ socket.on(GAMES.PLAYER_JOINED(game_id), ({ username }) => {
   users.appendChild(user);
 });
 
-fetch("/authentication/whoami", {
+fetch("/authentication/teamx", {
   method: "post",
 })
   .then((r) => r.json())
