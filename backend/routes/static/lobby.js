@@ -6,7 +6,7 @@ const router = express.Router();
 router.get("/", async (request, response) => {
   const { id: user_id } = request.session.user;
 
-  const games = await Games.getGames(user_id);
+  const availableGames = await Games.getAvailableGames(user_id);
 
   const everythinggames = await Games.getEverythingGames();
   const everything = await Games.getEverythingGameUsers();
@@ -18,7 +18,7 @@ router.get("/", async (request, response) => {
 
   response.render("lobby", {
     title: "Team X term project",
-    games: games,
+    availableGames: availableGames,
   });
 });
 

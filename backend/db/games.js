@@ -4,7 +4,7 @@ const db = require("./connection.js");
 const CREATE_SQL = "INSERT INTO game DEFAULT VALUES RETURNING id";
 const USER_GAMES = "SELECT id FROM game WHERE id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
 const RUNNING_GAMES = "SELECT id FROM game WHERE is_started=true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
-const AVAILABLE_GAMES_LIST = "SELECT id FROM game WHERE is_started=false AND user_id = $1 NOT IN (SELECT game_id FROM game_users)";
+const AVAILABLE_GAMES_LIST = "SELECT * FROM game LEFT JOIN game_users ON game.id = game_users.game_id WHERE game_users.user_id != $1 OR game_users.user_id IS NULL";
 
 //Game-Users SQL Queries
 const JOIN_GAME = "INSERT INTO game_users (game_id, user_id, table_order) VALUES ($1, $2, $3)";

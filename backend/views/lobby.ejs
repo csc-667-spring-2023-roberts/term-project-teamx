@@ -19,23 +19,26 @@
       <li><a href="/games">UNO</a></li>
     </ul>
 
+    <!-- Game Create Button -->
+    <form method="post" action="/games/create">
+      <input type="submit" value="Create Game" />
+    </form>
+
     <!-- Game List-->
     <div id="games-list">
-
-      <!-- Game Create Button -->
-      <form method="post" action="/games/create">
-        <input type="submit" value="Create Game" />
-      </form>
+      <h2>Game List</h2>
 
       <!-- Available Games -->
-      <% if(games.length > 0) { %>
-        <% for(game of games) { %>
+      Available Games (Not Joined, Not Started) <br>
+      <% if(availableGames.length > 0) { %>
+        <% for(game of availableGames) { %>
           <a href="/games/<%= game.id %>/join">Join <%= game.id %></a>
         <% }%>
       <% } %>
-      <% if( games.length < 1 ) { %>
+      <% if( availableGames.length < 1 ) { %>
         <p>No Games are Available to Join, instead create one</p>
       <% } %>
+      <br><br>
     </div>
 
     <!-- Chat Area -->
