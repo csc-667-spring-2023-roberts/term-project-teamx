@@ -8,6 +8,7 @@ router.get("/", async (request, response) => {
 
   const availableGames = await Games.getAvailableGames(user_id); //Games that the user is not in that is_running = false
   const reJoinGames = await Games.getGames(user_id); //Games that the user is in that is_running = true
+  const runningGames = await Games.getRunningGames(user_id);
 
   const everythinggames = await Games.getEverythingGames();
   const everything = await Games.getEverythingGameUsers();
@@ -21,6 +22,7 @@ router.get("/", async (request, response) => {
     title: "Team X term project",
     availableGames: availableGames,
     reJoinGames: reJoinGames,
+    runningGames: runningGames,
   });
 });
 
