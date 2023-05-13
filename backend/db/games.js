@@ -4,13 +4,16 @@ const db = require("./connection.js");
 const CREATE_SQL = "INSERT INTO game DEFAULT VALUES RETURNING id";
 const USER_GAMES = "SELECT id FROM game WHERE id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
 const RUNNING_GAMES = "SELECT id FROM game WHERE is_started=true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
-const AVAILABLE_GAMES_LIST = "SELECT * FROM game LEFT JOIN game_users ON game.id = game_users.game_id WHERE game_users.user_id != $1 OR game_users.user_id IS NULL";
+const AVAILABLE_GAMES_LIST = "SELECT * FROM game WHERE is_started = false AND id NOT IN (SELECT game_id FROM game_users WHERE user_id = $1 AND current = true)";
+const UPDATE_IS_ALIVE = "UPDATE game SET is_alive=false where $id = $1";
 
 //Game-Users SQL Queries
-const JOIN_GAME = "INSERT INTO game_users (game_id, user_id, table_order) VALUES ($1, $2, $3)";
+const GET_EVERYTHING_GAME_USERS = "SELECT * FROM game_users";
+const JOIN_GAME = "INSERT INTO game_users (user_id, game_id, current, table_order) VALUES ($1, $2, $3, $4)";
 const COUNT_PLAYERS = "SELECT COUNT(table_order) FROM game_users WHERE game_id=$1";
 const MAX_TABLE_ORDER = "SELECT MAX(table_order) FROM game_users WHERE game_id=$1";
-const GET_EVERYTHING_GAME_USERS = "SELECT * FROM game_users";
+const GET_GAME_USERS_COUNT = "SELECT COUNT(*) FROM game_users WHERE game_id=$1";
+const DELETE_USER_GAME = "DELETE FROM game_users where user_id=$1 AND game_id=$2";
 
 //Users and Game-Users SQL Queries
 const GET_USERS = "SELECT id, username FROM users, game_users WHERE game_users.game_id=$1 AND game_users.user_id=users.id";
@@ -20,15 +23,7 @@ const CREATING_USER_SQL = "SELECT username FROM users, game_users WHERE game_use
 
 //GameBag SQL Queries
 const GAMEBAG = "INSERT INTO gamebag (value, color, gameid, userid, specialcard ) VALUES ($1, $2, $3, $4, $5)";
-
-const GET_GAME_USERS_COUNT = "SELECT COUNT(*) FROM game_users WHERE game_id=$1";
-
-const DELETE_USER_GAME = "DELETE FROM game_users where user_id=$1 AND game_id=$2";
-
-const UPDATE_IS_ALIVE = "UPDATE game SET is_alive=false where $id = $1";
-
 const UPDATE_GAMEBAG_USERID = "UPDATE gamebag SET userid = $1 WHERE gameid=$2 AND value=$3 AND color=$4 AND specialcard=$5";
-
 const SELECT_RANDOMCARDS = "SELECT * FROM gamebag WHERE gameid=$1 AND userid=$2 ORDER BY RANDOM() LIMIT $3";
 
 //Create a Game
@@ -38,7 +33,7 @@ const create = async (user_id) => {
   const { id } = await db.one(CREATE_SQL);
 
   //Add the Player to the Game
-  await db.none(JOIN_GAME, [id, user_id, 0]);
+  await db.none(JOIN_GAME, [user_id, id, false, 0]);
   
   //Return the Game_Id
   return { id };
