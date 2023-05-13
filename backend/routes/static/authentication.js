@@ -72,7 +72,7 @@ router.get("/logout", (request, response) => {
   response.redirect("/");
 });
 
-router.post("/whoami", (request, response) => {
+router.post("/teamx", (request, response) => {
   const { id } = request.session.user;
 
   response.json({ id });
