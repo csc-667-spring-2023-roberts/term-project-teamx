@@ -2,15 +2,18 @@ const db = require("./connection.js");
 
 //Game SQL Queries
 const CREATE_SQL = "INSERT INTO game DEFAULT VALUES RETURNING id";
-const USER_GAMES = "SELECT id FROM game WHERE is_alive=true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
-const RUNNING_GAMES = "SELECT id FROM game WHERE is_started=true AND is_alive=true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
+const USER_GAMES = "SELECT id FROM game WHERE is_started = false AND is_alive = true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
+const RUNNING_GAMES = "SELECT id FROM game WHERE is_started = true AND is_alive = true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
+const AVAILABLE_GAMES = "SELECT id FROM game WHERE is_started = false AND is_alive = true AND id NOT IN (SELECT game_id FROM game_users WHERE user_id=$1)";
 const AVAILABLE_GAMES_LIST = "SELECT game_id as id FROM game_users WHERE game_id NOT IN (SELECT game_id FROM game_users WHERE user_id=$1) AND game_id IN (SELECT id AS game_id FROM game WHERE is_started=false AND is_alive=true)";
 
+
 //Game-Users SQL Queries
-const JOIN_GAME = "INSERT INTO game_users (game_id, user_id, table_order) VALUES ($1, $2, $3)";
+const GET_EVERYTHING_GAME_USERS = "SELECT * FROM game_users";
+const JOIN_GAME = "INSERT INTO game_users (user_id, game_id, current, table_order) VALUES ($1, $2, $3, $4)";
 const COUNT_PLAYERS = "SELECT COUNT(table_order) FROM game_users WHERE game_id=$1";
 const MAX_TABLE_ORDER = "SELECT MAX(table_order) FROM game_users WHERE game_id=$1";
-const GET_EVERYTHING_GAME_USERS = "SELECT * FROM game_users";
+
 
 //Users and Game-Users SQL Queries
 const GET_USERS = "SELECT id, username FROM users, game_users WHERE game_users.game_id=$1 AND game_users.user_id=users.id";
@@ -28,7 +31,6 @@ const DELETE_USER_GAME = "DELETE FROM game_users where user_id=$1 AND game_id=$2
 const UPDATE_IS_ALIVE = "UPDATE game SET is_alive=false where $id = $1";
 
 const UPDATE_GAMEBAG_USERID = "UPDATE gamebag SET userid = $1 WHERE gameid=$2 AND value=$3 AND color=$4 AND specialcard=$5";
-
 const SELECT_RANDOMCARDS = "SELECT * FROM gamebag WHERE gameid=$1 AND userid=$2 ORDER BY RANDOM() LIMIT $3";
 
 //Create a Game
@@ -38,7 +40,7 @@ const create = async (user_id) => {
   const { id } = await db.one(CREATE_SQL);
 
   //Add the Player to the Game
-  await db.none(JOIN_GAME, [id, user_id, 0]);
+  await db.none(JOIN_GAME, [user_id, id, false, 0]);
   
   //Return the Game_Id
   return { id };
@@ -51,14 +53,14 @@ const creatingUser = async (game_id) => db.one(CREATING_USER_SQL, [game_id]);
 const join = async (user_id, game_id) => {
   const { max } = await db.one( MAX_TABLE_ORDER, [game_id]);
 
-  await db.none(JOIN_GAME, [game_id, user_id, max + 1]);
+  await db.none(JOIN_GAME, [user_id, game_id, false, max + 1]);
 };
 
 //Gets Users from Users/Game-Users in a Game
 const getUsers = (game_id) => db.any(GET_USERS, [game_id]);
 
 //Gets Games that a User is not currently in that is Not Currently Ongoing
-const getAvailableGames = (user_id) => db.any(AVAILABLE_GAMES_LIST,[user_id]);
+const getAvailableGames = (user_id) => db.any(AVAILABLE_GAMES,[user_id]);
 
 //Gets Games that a User is not currently in that is Currently Ongoing
 const getRunningGames = (user_id) => db.any(RUNNING_GAMES,[user_id]);
@@ -70,9 +72,15 @@ const getGames = (user_id) => db.any(USER_GAMES,[user_id]);
 const getAllGames = async () => { return await db.any("SELECT id FROM game"); };
 
 
+const getEverythingGames = async () => { return await db.any("SELECT * FROM game"); };
+
+const getEverythingGameUsers = async () => {return await db.any(GET_EVERYTHING_GAME_USERS); };
+
+
 
 
 //This needs to be explained or named
+// we are using that map to sstore the users from the users table and giving the shuffling cards, I put it outside the start block because we can use that in future when playing the game to use it a queue.
 let map = new Map;
 
 //Needs work
@@ -179,6 +187,8 @@ module.exports = {
   getRunningGames,
   getGames,
   getAllGames,
+  getEverythingGames,
+  getEverythingGameUsers,
   exitFromGameLobby,
   putOneCardintoDeck,
   getOneCardFromDeck,

@@ -7,7 +7,6 @@ const router = express.Router();
 router.post("/create", async (request, response) => {
   const { id: user_id } = request.session.user;
 
-  
   try {
     const { id: game_id } = await Games.create(user_id);
 

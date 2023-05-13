@@ -19,24 +19,50 @@
       <li><a href="/games">UNO</a></li>
     </ul>
 
+    <!-- Game Create Button -->
+    <form method="post" action="/games/create">
+      <input type="submit" value="Create Game" />
+    </form>
+
     <!-- Game List-->
     <div id="games-list">
-
-      <!-- Game Create Button -->
-      <form method="post" action="/games/create">
-        <input type="submit" value="Create Game" />
-      </form>
+      <h2>Game List</h2>
 
       <!-- Available Games -->
-      <h4>Available games to join</h4>
-      <% if(games.length > 0) { %>
-        <% for(game of games) { %>
+      Available Games (Not Joined, Not Started) <br>
+      <% if(availableGames.length > 0) { %>
+        <% for(game of availableGames) { %>
           <a href="/games/<%= game.id %>/join">Join <%= game.id %></a>
         <% }%>
       <% } %>
-      <% if( games.length < 1 ) { %>
+      <% if( availableGames.length < 1 ) { %>
         <p>No Games are Available to Join, instead create one</p>
       <% } %>
+      <br><br>
+
+      <!-- Rejoinable Games -->
+      ReJoin Games (Joined, Not Started) <br>
+      <% if(reJoinGames.length > 0) { %>
+        <% for(game of reJoinGames) { %>
+          <a href="/games/<%= game.id %>/join">Join <%= game.id %></a>
+        <% }%>
+      <% } %>
+      <% if( reJoinGames.length < 1 ) { %>
+      No Games are Available to Join, instead create one
+      <% } %>
+      <br><br>
+
+      <!-- Running Games -->
+      Running Games (Joined, Started) <br>
+      <% if(runningGames.length > 0) { %>
+        <% for(game of runningGames) { %>
+          <a href="/games/<%= game.id %>/join">Join <%= game.id %></a>
+        <% }%>
+      <% } %>
+      <% if( runningGames.length < 1 ) { %>
+      No Games are Available to Join, instead create one
+      <% } %>
+      <br><br>
     </div>
 
     <!-- ALready Joined Games -->
