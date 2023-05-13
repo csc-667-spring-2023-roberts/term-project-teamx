@@ -6,7 +6,8 @@ const router = express.Router();
 router.get("/", async (request, response) => {
   const { id: user_id } = request.session.user;
 
-  const availableGames = await Games.getAvailableGames(user_id);
+  const availableGames = await Games.getAvailableGames(user_id); //Games that the user is not in that is_running = false
+  const reJoinGames = await Games.getGames(user_id); //Games that the user is in that is_running = true
 
   const everythinggames = await Games.getEverythingGames();
   const everything = await Games.getEverythingGameUsers();
@@ -19,6 +20,7 @@ router.get("/", async (request, response) => {
   response.render("lobby", {
     title: "Team X term project",
     availableGames: availableGames,
+    reJoinGames: reJoinGames,
   });
 });
 

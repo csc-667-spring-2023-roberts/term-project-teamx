@@ -39,6 +39,18 @@
         <p>No Games are Available to Join, instead create one</p>
       <% } %>
       <br><br>
+
+      <!-- Available Games -->
+      ReJoin Games (Joined, Not Started) <br>
+      <% if(reJoinGames.length > 0) { %>
+        <% for(game of reJoinGames) { %>
+          <a href="/games/<%= game.id %>/join">Join <%= game.id %></a>
+        <% }%>
+      <% } %>
+      <% if( reJoinGames.length < 1 ) { %>
+        <p>No Games are Available to Join, instead create one</p>
+      <% } %>
+      <br><br>
     </div>
 
     <!-- Chat Area -->

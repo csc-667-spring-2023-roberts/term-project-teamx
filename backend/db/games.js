@@ -2,9 +2,9 @@ const db = require("./connection.js");
 
 //Game SQL Queries
 const CREATE_SQL = "INSERT INTO game DEFAULT VALUES RETURNING id";
-const USER_GAMES = "SELECT id FROM game WHERE id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
-const RUNNING_GAMES = "SELECT id FROM game WHERE is_started=true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
-const AVAILABLE_GAMES_LIST = "SELECT * FROM game WHERE is_started = false AND id NOT IN (SELECT game_id FROM game_users WHERE user_id = $1 AND current = true)";
+const USER_GAMES = "SELECT id FROM game WHERE is_started = false AND is_alive = true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
+const RUNNING_GAMES = "SELECT id FROM game WHERE is_started = true AND is_alive = true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
+const AVAILABLE_GAMES = "SELECT id FROM game WHERE is_started = false AND is_alive = true AND id NOT IN (SELECT game_id FROM game_users WHERE user_id=$1)";
 const UPDATE_IS_ALIVE = "UPDATE game SET is_alive=false where $id = $1";
 
 //Game-Users SQL Queries
@@ -46,14 +46,14 @@ const creatingUser = async (game_id) => db.one(CREATING_USER_SQL, [game_id]);
 const join = async (user_id, game_id) => {
   const { max } = await db.one( MAX_TABLE_ORDER, [game_id]);
 
-  await db.none(JOIN_GAME, [game_id, user_id, max + 1]);
+  await db.none(JOIN_GAME, [user_id, game_id, false, max + 1]);
 };
 
 //Gets Users from Users/Game-Users in a Game
 const getUsers = (game_id) => db.any(GET_USERS, [game_id]);
 
 //Gets Games that a User is not currently in that is Not Currently Ongoing
-const getAvailableGames = (user_id) => db.any(AVAILABLE_GAMES_LIST,[user_id]);
+const getAvailableGames = (user_id) => db.any(AVAILABLE_GAMES,[user_id]);
 
 //Gets Games that a User is not currently in that is Currently Ongoing
 const getRunningGames = (user_id) => db.any(RUNNING_GAMES,[user_id]);
