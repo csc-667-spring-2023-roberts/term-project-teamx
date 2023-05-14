@@ -1,4 +1,5 @@
 const db = require("./connection.js");
+const Deck = require("./deck.js");
 
 //Game SQL Queries
 const CREATE_SQL = "INSERT INTO game DEFAULT VALUES RETURNING id";
@@ -6,32 +7,30 @@ const USER_GAMES = "SELECT id FROM game WHERE is_started = false AND is_alive = 
 const RUNNING_GAMES = "SELECT id FROM game WHERE is_started = true AND is_alive = true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
 const AVAILABLE_GAMES = "SELECT id FROM game WHERE is_started = false AND is_alive = true AND id NOT IN (SELECT game_id FROM game_users WHERE user_id=$1)";
 const AVAILABLE_GAMES_LIST = "SELECT game_id as id FROM game_users WHERE game_id NOT IN (SELECT game_id FROM game_users WHERE user_id=$1) AND game_id IN (SELECT id AS game_id FROM game WHERE is_started=false AND is_alive=true)";
-
+const UPDATE_IS_ALIVE = "UPDATE game SET is_alive=false where $id = $1";
 
 //Game-Users SQL Queries
 const GET_EVERYTHING_GAME_USERS = "SELECT * FROM game_users";
 const JOIN_GAME = "INSERT INTO game_users (user_id, game_id, current, table_order) VALUES ($1, $2, $3, $4)";
 const COUNT_PLAYERS = "SELECT COUNT(table_order) FROM game_users WHERE game_id=$1";
 const MAX_TABLE_ORDER = "SELECT MAX(table_order) FROM game_users WHERE game_id=$1";
+const GET_GAME_USERS_COUNT = "SELECT COUNT(*) FROM game_users WHERE game_id=$1";
 
 
 //Users and Game-Users SQL Queries
 const GET_USERS = "SELECT id, username FROM users, game_users WHERE game_users.game_id=$1 AND game_users.user_id=users.id";
+const DELETE_USER_GAME = "DELETE FROM game_users where user_id=$1 AND game_id=$2";
 
 //Game and Game-Users SQL Queries
 const CREATING_USER_SQL = "SELECT username FROM users, game_users WHERE game_users.game_id=$1 AND table_order=0 AND game_users.user_id=users.id";
 
 //GameBag SQL Queries
 const GAMEBAG = "INSERT INTO gamebag (value, color, gameid, userid, specialcard ) VALUES ($1, $2, $3, $4, $5)";
-
-const GET_GAME_USERS_COUNT = "SELECT COUNT(*) FROM game_users WHERE game_id=$1";
-
-const DELETE_USER_GAME = "DELETE FROM game_users where user_id=$1 AND game_id=$2";
-
-const UPDATE_IS_ALIVE = "UPDATE game SET is_alive=false where $id = $1";
-
 const UPDATE_GAMEBAG_USERID = "UPDATE gamebag SET userid = $1 WHERE gameid=$2 AND value=$3 AND color=$4 AND specialcard=$5";
 const SELECT_RANDOMCARDS = "SELECT * FROM gamebag WHERE gameid=$1 AND userid=$2 ORDER BY RANDOM() LIMIT $3";
+const SELECT_GAMECARDS = "SELECT * from gamebag WHERE gameid=$1 AND NOT userid = 0";
+const GET_USER_TABLE_ORDER = "SELECT user_id, table_order FROM game_users where game_id=$1";
+
 
 //Create a Game
 //Insert the creating User into the game_users table
@@ -71,12 +70,16 @@ const getGames = (user_id) => db.any(USER_GAMES,[user_id]);
 //Get all games
 const getAllGames = async () => { return await db.any("SELECT id FROM game"); };
 
-
 const getEverythingGames = async () => { return await db.any("SELECT * FROM game"); };
 
 const getEverythingGameUsers = async () => {return await db.any(GET_EVERYTHING_GAME_USERS); };
 
+const player_count = async (game_id) => {return await db.one(COUNT_PLAYERS,[game_id]);};
 
+
+const getTableOrder = async (game_id) => {
+  return await db.any(GET_USER_TABLE_ORDER,[game_id]);
+}
 
 
 //This needs to be explained or named
@@ -99,28 +102,21 @@ const start = async (game_id) => {
     await db.none(GAMEBAG,["0","nocolor",game_id,0,'TRUE']);
   });
 
-  //console.log(await db.multi("select player_id from gamebag where game_id=$1",[game_id]));
-  
-
-  let player_count;
-  await db.one(COUNT_PLAYERS,[game_id]).then(data => {
-    console.log(data["count"]);
-    player_count = data["count"];
-  })
+  const player_count = await this.player_count(game_id);
 
   let current_game_users = await getUsers(game_id);
 
-  var i=1;
+  var i=0;
   current_game_users.forEach(element => {
     map.set(i,element["id"]);
     i++;
   })
 
-
-
   await db.none("update game set is_started=true where id=$1",[game_id]);
 
   let shuffle_cards;
+  var count=1;
+
 
   await db.multi(SELECT_RANDOMCARDS,[game_id,0,player_count*7]).then(
     data=>{
@@ -128,41 +124,23 @@ const start = async (game_id) => {
     }
   );
 
-  //await db.multi("select userid from game where id=$1",[game_id]).then(data => {
-    //users=data[0];
- // });
-
- console.log(map);
- console.log(current_game_users);
-
-  var count=1;
-
-  console.log(shuffle_cards.length);
-
-  shuffle_cards.forEach( async card => {
-    await db.none(UPDATE_GAMEBAG_USERID,[map.get(count%player_count),card["gameid"],card["value"],card["color"],card["specialcard"]]);
+  await shuffle_cards.forEach(card => {
+    console.log(map.get(count%player_count),count);
+    db.none(UPDATE_GAMEBAG_USERID,[map.get(count%player_count),card["gameid"],card["value"],card["color"],card["specialcard"]]);
+    console.log(count," after update suffle")
     count=count+1;
   })
 
-  const deck_card = db.one(SELECT_RANDOMCARDS,[game_id,0,1])
+  //taking one card from the deck to put on the table as the top card
+  await Deck.getOneCardFromDeck(0,game_id,1);
+  //Setting the current turn of the player.
 
-  await db.none(UPDATE_GAMEBAG_USERID,[-1,deck_card["gameid"],deck_card["value"],deck_card["color"],deck_card["specialcard"]]);
-  
+
+  //After Shuffling the deck and distrbuting the cards, we return the cards which are in players hand and top card
+  return Deck.getCurrentState(game_id);
+
 }
 
-// const nextTurn = async (user_id, count) => {
-//    updating the players turn in the next git commit changes
-// }
-  
-const putOneCardintoDeck = async (card) => {
-  await db.none(UPDATE_GAMEBAG_USERID,[0,card["gameid"],card["value"],card["color"],card["specialcard"]]);
-}
-
-const getOneCardFromDeck = async (user_id,game_id,count) => {
-  const card = await db.one(SELECT_RANDOMCARDS,[game_id,0,count]);
-  await db.none(UPDATE_GAMEBAG_USERID,[user_id,card["gameid"],card["value"],card["color"],card["specialcard"]]);
-  return { card }
-}
 
 const exitFromGameLobby = async (user_id,game_id) => {
   //getting the player count from the game
@@ -190,6 +168,6 @@ module.exports = {
   getEverythingGames,
   getEverythingGameUsers,
   exitFromGameLobby,
-  putOneCardintoDeck,
-  getOneCardFromDeck,
+  player_count,
+  getTableOrder,
 };
