@@ -56,7 +56,7 @@ const join = async (user_id, game_id) => {
 };
 
 //Gets Users from Users/Game-Users in a Game
-const getUsers = (game_id) => db.any(GET_USERS, [game_id]);
+const getUsers = async (game_id) => { return await db.any(GET_USERS, [game_id]) };
 
 //Gets Games that a User is not currently in that is Not Currently Ongoing
 const getAvailableGames = (user_id) => db.any(AVAILABLE_GAMES,[user_id]);
@@ -81,9 +81,8 @@ const getTableOrder = async (game_id) => {
   return await db.any(GET_USER_TABLE_ORDER,[game_id]);
 }
 
-
-//This needs to be explained or named
-// we are using that map to sstore the users from the users table and giving the shuffling cards, I put it outside the start block because we can use that in future when playing the game to use it a queue.
+// Map to store the users from the users table and giving the shuffling cards 
+// Outside the start block because we can use that in future when playing the game to use it a queue.
 let map = new Map;
 
 //Needs work
@@ -91,6 +90,7 @@ const start = async (game_id) => {
 
   const colors=["blue","green","yellow","red"];
 
+  //Fill a Gamebag for a specified Game with Cards
   colors.forEach(async element => {
     for(let i=0;i<10;i++){
       await db.none(GAMEBAG,[i.toString(),element,game_id,0,'FALSE']);
@@ -102,47 +102,62 @@ const start = async (game_id) => {
     await db.none(GAMEBAG,["0","nocolor",game_id,0,'TRUE']);
   });
 
+  //Player Count for the Game when Start is pressed
   let playerCount = (await player_count(game_id))["count"];
+  console.log("PlayerCount (DB.games.js) = " + playerCount);  //Debug
 
-  console.log(playerCount)
-
+  //Get the Users of the Current Game
   let current_game_users = await getUsers(game_id);
+  
+  //Debug
+  if (current_game_users && Array.isArray(current_game_users)){
+    current_game_users.forEach((item) => {
+      console.log("CurrentGameUsers (DB.games.js) = [ id:" + item.id + " username:" + item.username + " ]");
+    });
+  }
+  else console.log("Error Reading CurrentGameUsers");
 
+  //Fill the Map with the IDs of the users in the game
   var i=0;
   current_game_users.forEach(element => {
     map.set(i,element["id"]);
     i++;
   })
 
-  await db.none("update game set is_started=true where id=$1",[game_id]);
+  //Update the state of the Game (Is_Started = true)
+  await db.none("UPDATE game SET is_started=true WHERE id=$1",[game_id]);
 
   let shuffle_cards;
   var count=1;
 
-
+  //
   await db.multi(SELECT_RANDOMCARDS,[game_id,0,playerCount*7]).then(
-    data=>{
+    (data) =>{
       shuffle_cards = data[0];
     }
   );
-
+  
+  console.log("ShuffleCards (DB.games.js)"); 
   await shuffle_cards.forEach(card => {
-    //console.log(map.get(count%playerCount),count);
+    console.log("Card: [ gameid:" + card.gameid + " userid:" + card.userid + " value:" + card.value + " color:" + card.color + " specialcard:" + card.specialcard + " ]"); //Debug
     db.none(UPDATE_GAMEBAG_USERID,[map.get(count%playerCount),card["gameid"],card["value"],card["color"],card["specialcard"]]);
     //console.log(count," after update suffle")
     count=count+1;
   })
 
-  //taking one card from the deck to put on the table as the top card
+  //Take one card from the deck to put on the table as the top card
   await Deck.getOneCardFromDeck(0,game_id,1);
 
-  //Setting the current turn of the player.
-
-
   //After Shuffling the deck and distrbuting the cards, we return the cards which are in players hand and top card
-  console.log(await Deck.getCurrentState(game_id));
-  return await Deck.getCurrentState(game_id);
+  const currentState = await Deck.getCurrentState(game_id);
 
+  //Debug
+  console.log("CurrentState before return");
+  await currentState.forEach(card => {
+    console.log("Card: [ gameid:" + card.gameid + " userid:" + card.userid + " value:" + card.value + " color:" + card.color + " specialcard:" + card.specialcard + " ]"); //Debug
+  });
+
+  return await currentState;
 }
 
 

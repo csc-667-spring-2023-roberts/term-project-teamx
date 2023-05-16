@@ -20,7 +20,7 @@ router.post("/create", async (request, response) => {
 
 router.get("/:id", async (request, response) => {
   const { id: game_id } = request.params;
-  console.log(game_id);
+  console.log("GameID = " + game_id);
   const user_id = request.params.id;
 
   //const is_started = Games.is_started(game_id);
