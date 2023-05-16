@@ -65,31 +65,7 @@ router.get("/:id/start", async (request, response) =>{
   const io = request.app.get("io");
   
   try {
-    const users = await Games.getUsers(game_id);
-
-    const gamecards = await Games.start(game_id);
-
-    console.log({ users });
-
-    console.log(gamecards);
-    gamecards.forEach((card)=> {
-      console.log(card);
-    })
-
-    users.forEach((user) => {
-      console.log({ user });
-      console.log("Emitting for" + GAMES.GAME_STATE_UPDATED(game_id, user));
-      io.emit(GAMES.GAME_STATE_UPDATED(game_id, user.id), {
-        users,
-        current_user: user.id,
-        current_player: user.id,
-        top_discard: "B6",
-        hand: ["A1", "B2", "C3"],
-      });
-    });
-    
-    response.status(200)
-    response.redirect(`/games/${game_id}`);
+    await Games.start(game_id);
   } catch (error) {
     console.log({ error });
 
@@ -105,9 +81,7 @@ router.post("/exit/:id", async (request,response)=>{
   const { id: user_id } = request.session.user;
   const { id: game_id } = request.params;
 
-  console.log("Exit Button Called");
   Games.exitFromGameLobby(user_id,game_id);
-  console.log("Player must be removed from the player-game list");
 
   response.redirect("/lobby");
 });

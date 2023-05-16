@@ -76,21 +76,18 @@ const getEverythingGameUsers = async () => {return await db.any(GET_EVERYTHING_G
 
 const player_count = async (game_id) => {return await db.one(COUNT_PLAYERS,[game_id]);};
 
-
 const getTableOrder = async (game_id) => {
   return await db.any(GET_USER_TABLE_ORDER,[game_id]);
 }
 
-
-//This needs to be explained or named
-// we are using that map to sstore the users from the users table and giving the shuffling cards, I put it outside the start block because we can use that in future when playing the game to use it a queue.
+// Map to store the users from the users table and giving the shuffling cards
+// Outside the start block because we can use it in future when playing the game to use it a queue.
 let map = new Map;
 
-//Needs work
 const start = async (game_id) => {
 
   const colors=["blue","green","yellow","red"];
-
+  //Filling the Gamebag with all the required Cards  
   colors.forEach(async element => {
     for(let i=0;i<10;i++){
       await db.none(GAMEBAG,[i.toString(),element,game_id,0,'FALSE']);
@@ -106,18 +103,22 @@ const start = async (game_id) => {
 
   let current_game_users = await getUsers(game_id);
 
+  //Fill the map with the ids of each player
   var i=0;
   current_game_users.forEach(element => {
     map.set(i,element["id"]);
     i++;
   })
 
+  //Update the is_started variable to true for the game
   await db.none("update game set is_started=true where id=$1",[game_id]);
+
 
   let shuffle_cards;
   var count=1;
 
-
+  //Pull random cards from the Gamebag amount(players*7)
+  //Allocate that data to shuffle_cards
   await db.multi(SELECT_RANDOMCARDS,[game_id,0,player_count*7]).then(
     data=>{
       shuffle_cards = data[0];
