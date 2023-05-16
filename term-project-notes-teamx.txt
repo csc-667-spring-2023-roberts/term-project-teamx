@@ -7,11 +7,12 @@ Team-Members: Andy Almeida - pie240, Arjun - Kepler, Tyler - Tydershot, *KARMA
 Set-Up:
 	1. Install Node.js
 	2. Install PostgreSQL
-		2a. sudo -u postgres sql
-		2b. CREATE USER <username>;
-		2c. ALTER USER <username> WITH PASSWORD '<password>';
-		2d. ALTER USER <username> CREATEDB;
-		2e. \q
+		2a. sudo -u postgres -i
+		2b. psql
+		2c. CREATE USER <username>;
+		2d. ALTER USER <username> WITH PASSWORD '<password>';
+		2e. ALTER USER <username> CREATEDB;
+		2f. exit
 	3. Git Fetch the Repo: https://github.com/csc-667-spring-2023-roberts/term-project-teamx.git
 	4. Create a .env file in the folder
 	5. Add to the .env file: 

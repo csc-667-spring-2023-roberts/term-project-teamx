@@ -3334,7 +3334,7 @@
         user.querySelector("span.username").innerText = username;
         users.appendChild(user);
       });
-      fetch("/authentication/whoami", {
+      fetch("/authentication/teamx", {
         method: "post"
       }).then((r) => r.json()).then(({ id: user_id }) => {
         console.log({ user_id });

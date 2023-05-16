@@ -7,6 +7,7 @@ const router = express.Router();
 const SALT_ROUNDS = 10;
 
 router.get("/register", (_request, response) => {
+  response.render("register", { title: "Jrob's Term Project" });
 });
 
 router.post("/register", async (request, response) => {
