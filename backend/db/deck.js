@@ -22,6 +22,7 @@ const getOneCardFromDeck = async (user_id,game_id,count) => {
 
 const getCurrentState = async (game_id) => {
   const deckcards = await db.any(SELECT_GAMECARDS,[game_id]);
+  return deckcards
 }
 
 //This is for single flow direction. not bidirectional, will update in future.

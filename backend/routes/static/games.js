@@ -65,8 +65,11 @@ router.get("/:id/start", async (request, response) =>{
   const io = request.app.get("io");
   
   try {
-    await Games.start(game_id);
+    
+    let res = await Games.start(game_id);
+
   } catch (error) {
+    
     console.log({ error });
 
     response.status(500);
