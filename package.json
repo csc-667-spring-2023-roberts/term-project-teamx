@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./backend/server.js",
-    "start:dev": "concurrently \"npm:server:dev\" \"npm:build:css\" \"npm:build:dev\"",
+    "start:dev": "dotenv -- concurrently \"npm:server:dev\" \"npm:build:css\" \"npm:build:dev\"",
     "server:dev": "NODE_ENV=development nodemon --watch backend ./backend/server.js",
     "build:dev": "esbuild ./frontend/index.js ./frontend/games/index.js --bundle --outdir=./backend/static/scripts/ --sourcemap --watch",
     "build:css": "npx tailwindcss -i ./frontend/css/index.css -o ./backend/static/stylesheets/index.css --watch",
@@ -25,6 +25,7 @@
     "connect-pg-simple": "^8.0.0",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
+    "dotenv-cli": "^7.2.1",
     "ejs": "^3.1.9",
     "esbuild": "0.17.18",
     "express": "^4.18.2",
