@@ -3311,7 +3311,7 @@
     "frontend/index.js"() {
       init_esm4();
       var import_constants = __toESM(require_constants());
-      var socket = lookup2();
+      var socket = lookup2({ query: { path: window.location.pathname } });
       var messageContainer = document.querySelector("#messages");
       var chatMessageTemplate = document.querySelector("#chat-message-template");
       socket.on(import_constants.default.CHAT_MESSAGE_RECEIVED, ({ game_id, id, username, message, timestamp }) => {
