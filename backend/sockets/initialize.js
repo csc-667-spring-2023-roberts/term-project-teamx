@@ -22,7 +22,7 @@ const initSockets = (app, sessionMiddleware) => {
       } else {
         game_id = parseInt(game_id.substring(game_id.lastIndexOf("/") + 1));
       }
-      console.log({ game_id, socket_id: socket_id, user: socket.request.session.user });
+      console.log({ game_id,user: socket.request.session.user });
       Sockets.add(game_id, socket.request.session.user.id, socket.id);
     } else {
       console.log("Invalid path in handshake query");
