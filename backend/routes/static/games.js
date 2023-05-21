@@ -1,6 +1,6 @@
 const express = require("express");
 const Games = require("../../db/games.js");
-const { GAMES } = require("../../../constants/events.js");
+const GAMES = require("../../../constants/events.js");
 
 const router = express.Router();
 
@@ -47,10 +47,10 @@ router.get("/:id/join", async (request, response) => {
   const io = request.app.get("io");
 
   try {
-    io.emit(GAMES.PLAYER_JOINED(game_id), { username });
     await Games.join(user_id, game_id);
 
     response.redirect(`/games/${game_id}`);
+
   } catch (error) {
     console.log({ error });
 

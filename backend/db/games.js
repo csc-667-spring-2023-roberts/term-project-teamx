@@ -2,7 +2,7 @@ const db = require("./connection.js");
 const Deck = require("./deck.js");
 
 //Game SQL Queries
-const CREATE_SQL = "INSERT INTO game DEFAULT VALUES RETURNING id";
+const CREATE_SQL = "INSERT INTO   game DEFAULT VALUES RETURNING id";
 const USER_GAMES = "SELECT id FROM game WHERE is_started = false AND is_alive = true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
 const RUNNING_GAMES = "SELECT id FROM game WHERE is_started = true AND is_alive = true AND id IN (SELECT game_id FROM game_users WHERE user_id=$1)";
 const AVAILABLE_GAMES = "SELECT id FROM game WHERE is_started = false AND is_alive = true AND id NOT IN (SELECT game_id FROM game_users WHERE user_id=$1)";

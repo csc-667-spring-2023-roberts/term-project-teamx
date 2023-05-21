@@ -3313,8 +3313,18 @@
     "constants/events.js"(exports, module) {
       var PLAYER_JOINED = (game_id) => `game:${game_id}:player-joined`;
       var GAME_STATE_UPDATED = (game_id, user_id) => `game:${game_id}:${user_id}:updated`;
+      var MAX_PLAYERS = 2;
+      var CHAT_MESSAGE_RECEIVED = "chat:message";
+      var GAME_CREATED = "game:created";
+      var GAME_STARTING = "game:starting";
+      var GAME_UPDATED = "game:updated";
       module.exports = {
-        GAMES: { PLAYER_JOINED, GAME_STATE_UPDATED }
+        GAMES: { PLAYER_JOINED, GAME_STATE_UPDATED },
+        GAME_CREATED,
+        MAX_PLAYERS,
+        GAME_STARTING,
+        GAME_UPDATED,
+        CHAT_MESSAGE_RECEIVED
       };
     }
   });
@@ -3325,21 +3335,39 @@
       init_esm4();
       init_game_id();
       var import_events = __toESM(require_events());
-      var socket = lookup2();
+      var socket = lookup2({ query: { path: window.location.pathname } });
       var userTemplate = document.querySelector("#user-template");
       var users = document.querySelector("#users");
       var game_id = getGameId(document.location.pathname);
-      socket.on(import_events.GAMES.PLAYER_JOINED(game_id), ({ username }) => {
+      socket.on(import_events.default.GAMES.PLAYER_JOINED(game_id), ({ username }) => {
         const user = userTemplate.content.cloneNode(true);
         user.querySelector("span.username").innerText = username;
         users.appendChild(user);
       });
+      socket.on(import_events.default.GAME_UPDATED, (game_updated) => {
+        console.log(game_updated + "This is a gameupdate socket.on");
+        const cardsTemplate = document.querySelector("#card-template");
+        const cards = document.querySelector("#game-card-rows");
+        console.log(JSON.stringify(game_updated));
+        game_updated.forEach((card) => {
+          const entry = cardsTemplate.content.cloneNode(true);
+          console.log("in games index.js");
+          entry.querySelector(".color").innerText = card.color;
+          entry.querySelector(".number").innerText = card.value;
+          entry.querySelector(".userId").innerText = card.userid;
+          cards.appendChild(entry);
+        });
+      });
+      socket.on(
+        import_events.default.GAME_STARTING,
+        (data) => console.log(import_events.default.GAME_STARTING, { data })
+      );
       fetch("/authentication/teamx", {
         method: "post"
       }).then((r) => r.json()).then(({ id: user_id }) => {
         console.log({ user_id });
         socket.on(
-          import_events.GAMES.GAME_STATE_UPDATED(game_id, user_id),
+          import_events.default.GAMES.GAME_STATE_UPDATED(game_id, user_id),
           async (game_state) => {
             console.log({ game_state });
           }

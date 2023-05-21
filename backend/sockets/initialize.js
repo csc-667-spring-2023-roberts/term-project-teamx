@@ -1,6 +1,8 @@
 const http = require("http");
 const { Server } = require("socket.io");
 const Sockets = require("../db/sockets");
+const GAMES = require("../../constants/events")
+const Deck = require("../../backend/db/deck.js")
 
 const initSockets = (app, sessionMiddleware) => {
   const server = http.createServer(app);
@@ -9,25 +11,33 @@ const initSockets = (app, sessionMiddleware) => {
   io.engine.use(sessionMiddleware);
 
   io.on("connection", (socket) => {
-    let game_id;
 
-    if (
-      socket.handshake.query &&
-      socket.handshake.query.path &&
-      typeof socket.handshake.query.path === "string"
-    ) {
-      game_id = socket.handshake.query.path.substring(1);
-      if(game_id == "lobby"){
-        game_id = 0;
-      } else {
-        game_id = parseInt(game_id.substring(game_id.lastIndexOf("/") + 1));
-      }
-      console.log({ game_id,user: socket.request.session.user });
-      Sockets.add(game_id, socket.request.session.user.id, socket.id);
-    } else {
-      console.log("Invalid path in handshake query");
-      console.log("socket.handshake.query.path = " + socket.handshake.query.path);
-      return
+    //getting the user id and game id from the session and url of the request respectively
+    let game_id = socket.handshake.query.path?.substring(1);
+    const user_id = socket.request.session?.user?.id;
+
+     if (user_id === NaN || game_id === NaN) {
+       return;
+     }
+
+     // if the last string in the url is lobby we return them to lobby
+     if (game_id === "lobby") {
+       game_id = 0;
+     } else {
+      //else we take the id from the last 
+       game_id = parseInt(game_id?.substring(game_id.lastIndexOf("/") + 1));
+     }
+
+     //we are adding the user_id with their socket.id and game_id to store the information
+     Sockets.add(game_id, user_id, socket.id);
+
+     //if there is a game page
+     if (game_id != 0) {
+      //fetching the current state of the cards in the deck
+      Deck.getCurrentState(game_id).then((data) => {
+         socket.emit(GAMES.GAME_UPDATED, data);
+         socket.emit("message", "HI");
+      });
     }
   });
 

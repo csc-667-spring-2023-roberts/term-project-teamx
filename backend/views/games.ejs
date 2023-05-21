@@ -50,11 +50,34 @@
     </template>
 
     <!-- A Card -->
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Color</th>
+            <th>Value</th>
+            <th>User ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!--- Card row to display the card-->
+          <tr id="game-card-rows">
+            <td class="color"></td>
+            <td class="number"></td>
+            <td class="userId"></td>
+          </tr>
+          <!-- Adding more rows from template -->
+        </tbody>
+      </table>
+    </div>
+
+
     <template id="card-template">
-      <div>
-        <span class="number"></span>
-        <span class="color"></span>
-      </div>
+      <tr>
+        <td class="number"></td>
+        <td class="color"></td>
+        <td class="userId"></td>
+      </tr>
     </template>
 
     <!-- Chat Area -->

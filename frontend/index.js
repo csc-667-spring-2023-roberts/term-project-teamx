@@ -10,7 +10,7 @@ const chatMessageTemplate = document.querySelector("#chat-message-template");
 
 socket.on(events.CHAT_MESSAGE_RECEIVED, ({ game_id, id, username, message, timestamp }) => {
   const entry = chatMessageTemplate.content.cloneNode(true);
-
+  
   if(game_id.toString() == chatMessageTemplate.target.value){
     entry.querySelector(".username").innerText = username;
     entry.querySelector(".message").innerText = message;
