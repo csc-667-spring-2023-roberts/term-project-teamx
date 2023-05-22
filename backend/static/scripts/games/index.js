@@ -3317,7 +3317,7 @@
       var CHAT_MESSAGE_RECEIVED = "chat:message";
       var GAME_CREATED = "game:created";
       var GAME_STARTING = "game:starting";
-      var GAME_UPDATED = "game:updated";
+      var GAME_UPDATED = (game_id, user_id) => `game${game_id}:${user_id}updated`;
       module.exports = {
         GAMES: { PLAYER_JOINED, GAME_STATE_UPDATED },
         GAME_CREATED,
@@ -3344,20 +3344,6 @@
         user.querySelector("span.username").innerText = username;
         users.appendChild(user);
       });
-      socket.on(import_events.default.GAME_UPDATED, (game_updated) => {
-        console.log(game_updated + "This is a gameupdate socket.on");
-        const cardsTemplate = document.querySelector("#card-template");
-        const cards = document.querySelector("#game-card-rows");
-        console.log(JSON.stringify(game_updated));
-        game_updated.forEach((card) => {
-          const entry = cardsTemplate.content.cloneNode(true);
-          console.log("in games index.js");
-          entry.querySelector(".color").innerText = card.color;
-          entry.querySelector(".number").innerText = card.value;
-          entry.querySelector(".userId").innerText = card.userid;
-          cards.appendChild(entry);
-        });
-      });
       socket.on(
         import_events.default.GAME_STARTING,
         (data) => console.log(import_events.default.GAME_STARTING, { data })
@@ -3372,6 +3358,27 @@
             console.log({ game_state });
           }
         );
+        socket.on(import_events.default.GAME_UPDATED(game_id, user_id), (game_updated) => {
+          const cardsTemplate = document.querySelector("#card-template");
+          const cards = document.querySelector("#game-card-rows");
+          const userTemplate2 = document.querySelector("#user-template");
+          const usercount = document.querySelector("#user-count");
+          game_updated.forEach((element) => {
+            const userentry = userTemplate2.content.cloneNode(true);
+            userentry.querySelector(".username").innerText = element.userinfo.username;
+            userentry.querySelector(".cardsCount").innerText = element.userinfo.count;
+            usercount.appendChild(userentry);
+            if (element.gamecards.length > 0) {
+              element.gamecards.forEach((card) => {
+                const entry = cardsTemplate.content.cloneNode(true);
+                entry.querySelector(".color").innerText = card.color;
+                entry.querySelector(".number").innerText = card.value;
+                entry.querySelector(".userId").innerText = card.userid;
+                cards.appendChild(entry);
+              });
+            }
+          });
+        });
       });
     }
   });

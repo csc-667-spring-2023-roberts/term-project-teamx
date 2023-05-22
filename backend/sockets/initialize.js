@@ -16,7 +16,8 @@ const initSockets = (app, sessionMiddleware) => {
     let game_id = socket.handshake.query.path?.substring(1);
     const user_id = socket.request.session?.user?.id;
 
-     if (user_id === NaN || game_id === NaN) {
+    //console.log(user_id + " "+ game_id)
+    if (user_id == undefined || game_id == undefined) {
        return;
      }
 
@@ -30,15 +31,18 @@ const initSockets = (app, sessionMiddleware) => {
 
      //we are adding the user_id with their socket.id and game_id to store the information
      Sockets.add(game_id, user_id, socket.id);
+     Sockets.get(game_id).then((data)=>{
+      //console.log(data)
+     });
+
 
      //if there is a game page
-     if (game_id != 0) {
-      //fetching the current state of the cards in the deck
-      Deck.getCurrentState(game_id).then((data) => {
-         socket.emit(GAMES.GAME_UPDATED, data);
-         socket.emit("message", "HI");
-      });
-    }
+    //  if (game_id != 0) {
+    //   //fetching the current state of the cards in the deck
+    //   Deck.getCurrentStateUser(game_id,user_id).then((data)=>{
+    //     socket.emit(GAMES.GAME_UPDATED,data);
+    //   })
+    // }
   });
 
   app.set("io", io);

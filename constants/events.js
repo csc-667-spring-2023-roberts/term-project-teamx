@@ -8,7 +8,7 @@ const CHAT_MESSAGE_RECEIVED = "chat:message";
 
 const GAME_CREATED = "game:created";
 const GAME_STARTING = "game:starting";
-const GAME_UPDATED = "game:updated";
+const GAME_UPDATED = (game_id,user_id) => `game${game_id}:${user_id}updated`;
 
 module.exports = {
   GAMES: { PLAYER_JOINED, GAME_STATE_UPDATED },

@@ -8,6 +8,7 @@ const RUNNING_GAMES = "SELECT id FROM game WHERE is_started = true AND is_alive 
 const AVAILABLE_GAMES = "SELECT id FROM game WHERE is_started = false AND is_alive = true AND id NOT IN (SELECT game_id FROM game_users WHERE user_id=$1)";
 const AVAILABLE_GAMES_LIST = "SELECT game_id as id FROM game_users WHERE game_id NOT IN (SELECT game_id FROM game_users WHERE user_id=$1) AND game_id IN (SELECT id AS game_id FROM game WHERE is_started=false AND is_alive=true)";
 const UPDATE_IS_ALIVE = "UPDATE game SET is_alive=false where $id = $1";
+const IS_STARTED = "select is_started from game WHERE id = $1";
 
 //Game-Users SQL Queries
 const GET_EVERYTHING_GAME_USERS = "SELECT * FROM game_users";
@@ -29,8 +30,11 @@ const GAMEBAG = "INSERT INTO gamebag (value, color, gameid, userid, specialcard 
 const UPDATE_GAMEBAG_USERID = "UPDATE gamebag SET userid = $1 WHERE gameid=$2 AND value=$3 AND color=$4 AND specialcard=$5";
 const SELECT_RANDOMCARDS = "SELECT * FROM gamebag WHERE gameid=$1 AND userid=$2 ORDER BY RANDOM() LIMIT $3";
 const SELECT_GAMECARDS = "SELECT * from gamebag WHERE gameid=$1 AND NOT userid = 0";
-const GET_USER_TABLE_ORDER = "SELECT user_id, table_order FROM game_users"
 
+
+const is_started = async (game_id) => {
+  return await db.one(IS_STARTED,[game_id]);
+}
 
 //Create a Game
 //Insert the creating User into the game_users table
@@ -76,17 +80,12 @@ const getEverythingGameUsers = async () => {return await db.any(GET_EVERYTHING_G
 
 const player_count = async (game_id) => {return await db.one(COUNT_PLAYERS,[game_id]);};
 
-
-const getTableOrder = async (game_id) => {
-  return await db.any(GET_USER_TABLE_ORDER,[game_id]);
-}
-
 // Map to store the users from the users table and giving the shuffling cards 
 // Outside the start block because we can use that in future when playing the game to use it a queue.
 let map = new Map;
 
 //Needs work
-const start = async (game_id) => {
+const start = async (game_id,user_id) => {
 
   const colors=["blue","green","yellow","red"];
 
@@ -104,7 +103,7 @@ const start = async (game_id) => {
 
   //Player Count for the Game when Start is pressed
   let playerCount = (await player_count(game_id))["count"];
-  console.log("PlayerCount (DB.games.js) = " + playerCount);  //Debug
+  //console.log("PlayerCount (DB.games.js) = " + playerCount);  //Debug
 
   //Get the Users of the Current Game
   let current_game_users = await getUsers(game_id);
@@ -112,10 +111,10 @@ const start = async (game_id) => {
   //Debug
   if (current_game_users && Array.isArray(current_game_users)){
     current_game_users.forEach((item) => {
-      console.log("CurrentGameUsers (DB.games.js) = [ id:" + item.id + " username:" + item.username + " ]");
+      //console.log("CurrentGameUsers (DB.games.js) = [ id:" + item.id + " username:" + item.username + " ]");
     });
   }
-  else console.log("Error Reading CurrentGameUsers");
+  //else console.log("Error Reading CurrentGameUsers");
 
   //Fill the Map with the IDs of the users in the game
   var i=0;
@@ -137,27 +136,19 @@ const start = async (game_id) => {
     }
   );
   
-  console.log("ShuffleCards (DB.games.js)"); 
+  //Assigning shuffled cards to the palyers
   await shuffle_cards.forEach(card => {
-    console.log("Card: [ gameid:" + card.gameid + " userid:" + card.userid + " value:" + card.value + " color:" + card.color + " specialcard:" + card.specialcard + " ]"); //Debug
     db.none(UPDATE_GAMEBAG_USERID,[map.get(count%playerCount),card["gameid"],card["value"],card["color"],card["specialcard"]]);
-    //console.log(count," after update suffle")
     count=count+1;
   })
 
-  //Take one card from the deck to put on the table as the top card
-  await Deck.getOneCardFromDeck(0,game_id,1);
+  const currentState = await Deck.getCurrentStateUser(game_id,user_id);
 
-  //After Shuffling the deck and distrbuting the cards, we return the cards which are in players hand and top card
-  const currentState = await Deck.getCurrentState(game_id);
+  // currentState.forEach(card => {
+  //   console.log("Card: [ gameid:" + card.gameid + " userid:" + card.userid + " value:" + card.value + " color:" + card.color + " specialcard:" + card.specialcard + " ]"); //Debug
+  // });
 
-  //Debug
-  console.log("CurrentState before return");
-  await currentState.forEach(card => {
-    console.log("Card: [ gameid:" + card.gameid + " userid:" + card.userid + " value:" + card.value + " color:" + card.color + " specialcard:" + card.specialcard + " ]"); //Debug
-  });
-
-  return await currentState;
+  return currentState;
 }
 
 
@@ -188,4 +179,5 @@ module.exports = {
   getEverythingGameUsers,
   exitFromGameLobby,
   player_count,
+  is_started,
 };

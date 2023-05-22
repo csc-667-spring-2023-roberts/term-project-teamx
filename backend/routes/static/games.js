@@ -1,6 +1,7 @@
 const express = require("express");
 const Games = require("../../db/games.js");
 const GAMES = require("../../../constants/events.js");
+const Deck = require("../../db/deck.js");
 
 const router = express.Router();
 
@@ -20,20 +21,19 @@ router.post("/create", async (request, response) => {
 
 router.get("/:id", async (request, response) => {
   const { id: game_id } = request.params;
-  console.log("GameID = " + game_id);
-  const user_id = request.params.id;
+  const { id : user_id } = request.session.user;
+  const io = request.app.get("io");
 
-  //const is_started = Games.is_started(game_id);
 
   try {
-    const { username: creating_user } = await Games.creatingUser(game_id);
+    const game_state = await Deck.getCurrentStateUser(game_id,user_id);
 
-    response.render("games", { creating_user, game_id });
+    response.render("games", { creating_user:user_id , game_id: game_id,  game_state : game_state});
   } catch (error) {
     console.log({ error });
 
     response.render("games", { 
-      creating_user: "Unknown",
+      creating_user: user_id,
       game_id: game_id,
   });
   }
@@ -54,22 +54,35 @@ router.get("/:id/join", async (request, response) => {
   } catch (error) {
     console.log({ error });
 
-    response.render("games", { creating_user: "Unknown" ,
-    game_id: game_id,});
+    response.render("games", { creating_user: user_id ,
+    game_id: game_id, game_state: data});
   }
 });
 
 router.get("/:id/start", async (request, response) =>{
 
   const {id : game_id} = request.params;
+  const { id : user_id} = request.session.user;
   const io = request.app.get("io");
+
+  //game_started is to check if the game is started or not
+  const game_started = await Games.is_started(parseInt(game_id))
+
   
   try {
     
+    //starting the game if the game isn't started yet
+    if(!game_started.is_started){
     const gameStartState = await Games.start(game_id);
 
     //Debug to see the state of the game
-    console.log({gameStartState});
+    const users = await Games.getUsers(game_id);
+    users.forEach( async user => {
+      const user_gamedata = await Deck.getCurrentStateUser(game_id,user.id);
+      io.emit(GAMES.GAME_UPDATED(game_id,user.id),user_gamedata);
+    })
+    }
+    response.redirect(`/games/${game_id}`)
 
   } catch (error) {
     

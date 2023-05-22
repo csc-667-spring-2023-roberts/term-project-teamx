@@ -41,13 +41,17 @@
       </div>
     </div>
 
+
     <!-- A User -->
     <template id="user-template">
-      <div class="user">
         <span class="username"></span>
-        <div class="cards"></div>
-      </div>
+        <div class="cardsCount"></div>
     </template>
+
+    <div id="user-count">
+      <span class="username"></span>
+      <span class="count"></span>
+    </div>
 
     <!-- A Card -->
     <div>
@@ -61,6 +65,19 @@
         </thead>
         <tbody>
           <!--- Card row to display the card-->
+          <% if(game_state.length > 0){ %>
+            <% game_state.forEach( game => { %> 
+             <% if(game.users == creating_user ) { %>
+                <% game.gamecards.forEach(card => { %>
+                  <tr>
+                    <td><%= card.value %></td>
+                    <td><%= card.color %></td>
+                    <td><%= card.userid %></td>
+                  </tr>
+                <% }) %>
+              <% } %>
+            <% }) %>
+          <% } %>
           <tr id="game-card-rows">
             <td class="color"></td>
             <td class="number"></td>
