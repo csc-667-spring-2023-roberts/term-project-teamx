@@ -74,6 +74,8 @@
                     <td><%= card.color %></td>
                     <td><%= card.userid %></td>
                   </tr>
+                  <% const imgval = `${card.color}_${card.value}_${card.specialcard}` %>
+                  <img id="image-card" src="/img/<%= imgval %>.png" alt="<%= imgval %> image not available">
                 <% }) %>
               <% } %>
             <% }) %>

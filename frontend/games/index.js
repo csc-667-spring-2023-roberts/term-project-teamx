@@ -60,7 +60,7 @@ fetch("/authentication/teamx", {
         if(element.gamecards.length > 0){
           element.gamecards.forEach(card => {
             const entry = cardsTemplate.content.cloneNode(true);
-            
+
             entry.querySelector(".color").innerText = card.color;
             entry.querySelector(".number").innerText = card.value;
             entry.querySelector(".userId").innerText = card.userid;

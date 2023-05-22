@@ -1,3 +1,7 @@
 #users .user {
   border: 1px solid #369;
 }
+
+#image-card {
+  width: 100px;
+}
