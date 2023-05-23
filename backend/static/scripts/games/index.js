@@ -3314,7 +3314,7 @@
       var PLAYER_JOINED = (game_id) => `game:${game_id}:player-joined`;
       var GAME_STATE_UPDATED = (game_id, user_id) => `game:${game_id}:${user_id}:updated`;
       var MAX_PLAYERS = 2;
-      var CHAT_MESSAGE_RECEIVED = "chat:message";
+      var CHAT_MESSAGE_RECEIVED = (game_id) => `chat${game_id}:message`;
       var GAME_CREATED = "game:created";
       var GAME_STARTING = "game:starting";
       var GAME_UPDATED = (game_id, user_id) => `game${game_id}:${user_id}updated`;
@@ -3358,6 +3358,16 @@
             console.log({ game_state });
           }
         );
+        socket.on(import_events.default.CHAT_MESSAGE_RECEIVED(game_id), (data) => {
+          const messageContainer = document.querySelector("#messages");
+          const chatMessageTemplate = document.querySelector("#chat-message-template");
+          const entry = chatMessageTemplate.content.cloneNode(true);
+          console.log(data + "hi");
+          entry.querySelector(".username").innerText = data.username;
+          entry.querySelector(".message").innerText = data.message;
+          entry.querySelector(".timestamp").innerText = data.timestamp;
+          messageContainer.appendChild(entry);
+        });
         socket.on(import_events.default.GAME_UPDATED(game_id, user_id), (game_updated) => {
           const cardsTemplate = document.querySelector("#card-template");
           const cards = document.querySelector("#game-card-rows");
@@ -3368,6 +3378,8 @@
             userentry.querySelector(".username").innerText = element.userinfo.username;
             userentry.querySelector(".cardsCount").innerText = element.userinfo.count;
             usercount.appendChild(userentry);
+            document.getElementById("current_color").textContent = element.current_game.current_color;
+            document.getElementById("current_number").textContent = element.current_game.current_number;
             if (element.gamecards.length > 0) {
               element.gamecards.forEach((card) => {
                 const entry = cardsTemplate.content.cloneNode(true);

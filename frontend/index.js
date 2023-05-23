@@ -1,24 +1,9 @@
 import io from "socket.io-client";
-import events from "../backend/sockets/constants";
 
 const socket = io({ query: { path:window.location.pathname } });
 
-const messageContainer = document.querySelector("#messages");
-
-const chatMessageTemplate = document.querySelector("#chat-message-template");
 
 
-socket.on(events.CHAT_MESSAGE_RECEIVED, ({ game_id, id, username, message, timestamp }) => {
-  const entry = chatMessageTemplate.content.cloneNode(true);
-  
-  if(game_id.toString() == chatMessageTemplate.target.value){
-    entry.querySelector(".username").innerText = username;
-    entry.querySelector(".message").innerText = message;
-    entry.querySelector(".timestamp").innerText = timestamp;
-
-    messageContainer.appendChild(entry);
-  }
-});
 
 document
   .querySelector("input#chatMessage")
@@ -31,7 +16,7 @@ document
 
     const gameId = window.location.pathname.split("/").pop();
 
-    fetch("/chat/{gameId}", {
+    fetch(`/chat/${gameId}`, {
       method: "post",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message }),

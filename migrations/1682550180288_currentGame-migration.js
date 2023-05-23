@@ -9,7 +9,7 @@ exports.up = pgm => {
       type: "int",
       notNull: true,
     },
-    player_count: {
+    buffer_count: {
       type:"int",
       notNull:true,
     },
@@ -25,6 +25,9 @@ exports.up = pgm => {
     current_color:{
       type:"varchar(256)",      
       notNull:true,
+    },
+    specialcard : {
+      type:"boolean",
     },
     current_direction:{
       type:"boolean",

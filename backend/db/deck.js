@@ -15,6 +15,7 @@ const GET_GAME_USERS_COUNT = "SELECT COUNT(*) FROM game_users WHERE game_id=$1";
 
 const GET_USERS = "SELECT id, username FROM users, game_users WHERE game_users.game_id=$1 AND game_users.user_id=users.id";
 
+const GET_CURRENT_GAME = "SELECT * FROM current_game WHERE game_id = $1";
 
 const putOneCardintoDeck = async (card) => {
   await db.none(UPDATE_GAMEBAG_USERID,[0,card["gameid"],card["value"],card["color"],card["specialcard"]]);
@@ -25,6 +26,7 @@ const getOneCardFromDeck = async (user_id,game_id,count) => {
   await db.none(UPDATE_GAMEBAG_USERID,[user_id,card["gameid"],card["value"],card["color"],card["specialcard"]]);
   return { card }
 }
+
 
 const getCurrentState = async (game_id) => {
   const deckcards = await db.any(SELECT_GAMECARDS,[game_id]);
@@ -41,9 +43,16 @@ const getCurrentStateUser = async (game_id, user_id) => {
     usercountMap.set(element.user_id, element.user_count);
   })
 
+  let current_game = {}
+  
+  const game = await db.one("SELECT * from game where id=$1",[parseInt(game_id)]);
+  console.log(game)
+  if(game.is_started){
+    current_game = await db.one(GET_CURRENT_GAME, [parseInt(game_id)]);
+  }
+
   let result = []
-  users.forEach( user => {
-      
+  users.forEach( async user => {
       const mapval = usercountMap.get(user.id)
       let userstate = {
         users : user.id,
@@ -52,6 +61,7 @@ const getCurrentStateUser = async (game_id, user_id) => {
           count : mapval,
         },
         gamecards : [],
+        current_game : current_game,
       }
       if(user_id == user.id){
         userstate.gamecards = userCards;
@@ -67,16 +77,9 @@ const getTableOrder = async (game_id) => {
 }
 
 
+
 //This is for single flow direction. not bidirectional, will update in future.
-const nextPlayer = async (user_id) => {
-  let map = new Map;
-  const user_table_order = await getTableOrder(game_id);
-  const sortedUsers = user_table_order.sort((a,b) => a["table_order"] - b["table_order"]);
-  const currentUserIndex = sortedUsers.findIndex(user_table_order => user_table_order["user_id"] == user_id);
-  const currentUser = sortedUsers[currentUserIndex];
-  const nextUserIndex = currentUserIndex === sortedUsers.length - 1 ? 0 : currentUserIndex + 1;
-  return sortedUsers[nextUserIndex]["id"];
-}
+
 
 module.exports = {
   putOneCardintoDeck,
@@ -84,5 +87,4 @@ module.exports = {
   getTableOrder,
   getCurrentState,
   getCurrentStateUser,
-  nextPlayer,
 };

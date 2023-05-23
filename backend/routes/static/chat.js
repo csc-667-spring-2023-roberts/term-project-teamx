@@ -1,20 +1,26 @@
 const express = require("express");
 const router = express.Router();
-const events = require("../../sockets/constants.js");
+const GAMES = require("../../../constants/events.js");
 const Chat = require("../../db/chat.js");
 
-router.post("/:id/", async (request, response) => {
+router.post("/:id", async (request, response) => {
   const io = request.app.get("io");
-  const game_id = request.params.id;
+  const {id :game_id} = request.params;
   const { message } = request.body;
   const { username, id : user_id } = request.session.user;
-  io.emit(events.CHAT_MESSAGE_RECEIVED, {
-    game_id : game_id,
-    id,
-    message ,
-    username,
+
+  const data = {
+    game_id : parseInt(game_id),
+    id : user_id,
+    message : message ,
+    username : username,
     timestamp: Date.now(),
-  });
+  }
+
+
+  console.log(data)
+
+  io.emit(GAMES.CHAT_MESSAGE_RECEIVED(parseInt(game_id)), data);
 
   response.status(200);
 });

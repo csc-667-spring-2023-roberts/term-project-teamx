@@ -29,7 +29,7 @@
       </form>
 
       <!-- Draw Card Button -->
-      <form method="post" action="/games/draw">
+      <form method="post" action="/games/<%= game_id %>/draw">
         <input type="submit" value="Draw"/>
       </form>
 
@@ -66,7 +66,12 @@
         <tbody>
           <!--- Card row to display the card-->
           <% if(game_state.length > 0){ %>
-            <% game_state.forEach( game => { %> 
+            <% game_state.forEach( game => { %>
+              <h4>TOP CARD</h4>
+              <div id="current-card">
+                <p id="current_color"></p>
+                <p id="current_number"></p>
+              </div> 
              <% if(game.users == creating_user ) { %>
                 <% game.gamecards.forEach(card => { %>
                   <tr>
@@ -75,7 +80,17 @@
                     <td><%= card.userid %></td>
                   </tr>
                   <% const imgval = `${card.color}_${card.value}_${card.specialcard}` %>
-                  <img id="image-card" src="/img/<%= imgval %>.png" alt="<%= imgval %> image not available">
+                  <img id="image-card" onclick="handleOnImageClick('<%= JSON.stringify(card)%>')" src="/img/<%= imgval %>.png" alt="<%= imgval %> image not available">
+                  <script>
+                    function handleOnImageClick(card){
+                      console.log(card)
+                      fetch("/games/play/<%= game_id %>",{
+                        method: "post",
+                        headers: { "Content-Type": "application/json" },
+                        body: card,
+                      })
+                    }
+                  </script>
                 <% }) %>
               <% } %>
             <% }) %>
@@ -105,7 +120,7 @@
     <div id="chat-container"> 
       <div id="messages"></div>
       <label>
-        <input id="chatMessage" name="chat-message" placeholder="Message..." />
+        <input id="chatMessage" name="chat-message" placeholder="Message..."/>
       </label>
     </div>
 

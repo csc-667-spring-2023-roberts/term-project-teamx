@@ -4,7 +4,7 @@ const GAME_STATE_UPDATED = (game_id, user_id) =>
 
 const MAX_PLAYERS = 2;
 
-const CHAT_MESSAGE_RECEIVED = "chat:message";
+const CHAT_MESSAGE_RECEIVED = (game_id) => `chat${game_id}:message`;
 
 const GAME_CREATED = "game:created";
 const GAME_STARTING = "game:starting";
@@ -16,5 +16,6 @@ module.exports = {
   MAX_PLAYERS,
   GAME_STARTING,
   GAME_UPDATED,
+
   CHAT_MESSAGE_RECEIVED,
 };

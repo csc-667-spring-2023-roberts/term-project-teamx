@@ -1,10 +1,6 @@
 (() => {
-  var __create = Object.create;
   var __defProp = Object.defineProperty;
-  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
   var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __getProtoOf = Object.getPrototypeOf;
-  var __hasOwnProp = Object.prototype.hasOwnProperty;
   var __esm = (fn, res) => function __init() {
     return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
   };
@@ -15,22 +11,6 @@
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
   };
-  var __copyProps = (to, from, except, desc) => {
-    if (from && typeof from === "object" || typeof from === "function") {
-      for (let key of __getOwnPropNames(from))
-        if (!__hasOwnProp.call(to, key) && key !== except)
-          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-    }
-    return to;
-  };
-  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-    // If the importer is in node compatibility mode or this is not an ESM
-    // file that has been converted to a CommonJS file using a Babel-
-    // compatible transform (i.e. "__esModule" has not been set), then set
-    // "default" to the CommonJS "module.exports" for node compatibility.
-    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-    mod
-  ));
 
   // node_modules/engine.io-parser/build/esm/commons.js
   var PACKET_TYPES, PACKET_TYPES_REVERSE, ERROR_PACKET;
@@ -3294,35 +3274,11 @@
     }
   });
 
-  // backend/sockets/constants.js
-  var require_constants = __commonJS({
-    "backend/sockets/constants.js"(exports, module) {
-      var CHAT_MESSAGE_RECEIVED = "chat-message-received";
-      var MAX_PLAYERS = 2;
-      module.exports = {
-        CHAT_MESSAGE_RECEIVED,
-        MAX_PLAYERS
-      };
-    }
-  });
-
   // frontend/index.js
   var require_frontend = __commonJS({
     "frontend/index.js"() {
       init_esm4();
-      var import_constants = __toESM(require_constants());
       var socket = lookup2({ query: { path: window.location.pathname } });
-      var messageContainer = document.querySelector("#messages");
-      var chatMessageTemplate = document.querySelector("#chat-message-template");
-      socket.on(import_constants.default.CHAT_MESSAGE_RECEIVED, ({ game_id, id, username, message, timestamp }) => {
-        const entry = chatMessageTemplate.content.cloneNode(true);
-        if (game_id.toString() == chatMessageTemplate.target.value) {
-          entry.querySelector(".username").innerText = username;
-          entry.querySelector(".message").innerText = message;
-          entry.querySelector(".timestamp").innerText = timestamp;
-          messageContainer.appendChild(entry);
-        }
-      });
       document.querySelector("input#chatMessage").addEventListener("keydown", (event) => {
         if (event.keyCode !== 13) {
           return;
@@ -3330,7 +3286,7 @@
         const message = event.target.value;
         event.target.value = "";
         const gameId = window.location.pathname.split("/").pop();
-        fetch("/chat/{gameId}", {
+        fetch(`/chat/${gameId}`, {
           method: "post",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message })

@@ -26,6 +26,7 @@ router.get("/:id", async (request, response) => {
 
 
   try {
+    //await Games.nextUser(game_id,user_id);
     const game_state = await Deck.getCurrentStateUser(game_id,user_id);
 
     response.render("games", { creating_user:user_id , game_id: game_id,  game_state : game_state});
@@ -48,6 +49,7 @@ router.get("/:id/join", async (request, response) => {
 
   try {
     await Games.join(user_id, game_id);
+
 
     response.redirect(`/games/${game_id}`);
 
@@ -73,12 +75,13 @@ router.get("/:id/start", async (request, response) =>{
     
     //starting the game if the game isn't started yet
     if(!game_started.is_started){
-    const gameStartState = await Games.start(game_id);
+    const gameStartState = await Games.start(parseInt(game_id),user_id);
 
     //Debug to see the state of the game
     const users = await Games.getUsers(game_id);
     users.forEach( async user => {
       const user_gamedata = await Deck.getCurrentStateUser(game_id,user.id);
+      console.log(user.id);
       io.emit(GAMES.GAME_UPDATED(game_id,user.id),user_gamedata);
     })
     }
@@ -93,8 +96,39 @@ router.get("/:id/start", async (request, response) =>{
   }
 
 })
+router.post("/play/:id", async (request, response) => {
+  const { id: user_id, username } = request.session.user;
+  const io = request.app.get("io");
+  const { id: game_id } = request.params;
+  const card = request.body;
+  if(user_id == card["userid"]){
+    const val = await Games.playCard(parseInt(game_id),user_id,card);
+    console.log(val + "value of playCard funciton games.js static");
+    if(val){
+      const users = await Games.getUsers(game_id);
+      //io.emit()
+      users.forEach( async user => {
+      const user_gamedata = await Deck.getCurrentStateUser(game_id,user.id);
+      console.log(user.id);
+      io.emit(GAMES.GAME_UPDATED(game_id,user.id),user_gamedata);
+    })
+    }
+  }
+});
 
-router.post("/play/")
+router.post("/:id/draw", async (request,response) => {
+  const { id: user_id, username } = request.session.user;
+  const io = request.app.get("io");
+  const { id: game_id } = request.params;
+  const card = await Deck.getOneCardFromDeck(user_id, game_id, 1);
+  const users = await Games.getUsers(game_id);
+  users.forEach( async user => {
+    const user_gamedata = await Deck.getCurrentStateUser(game_id,user.id);
+    console.log(user.id);
+    io.emit(GAMES.GAME_UPDATED(game_id,user.id),user_gamedata);
+  })
+  response.redirect(`/games/${game_id}`);
+})
 
 router.post("/exit/:id", async (request,response)=>{
   const { id: user_id } = request.session.user;

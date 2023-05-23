@@ -30,6 +30,7 @@ socket.on(GAMES.GAME_STARTING, (data) =>
 );
 
 
+
 fetch("/authentication/teamx", {
   method: "post",
 })
@@ -42,6 +43,19 @@ fetch("/authentication/teamx", {
         console.log({ game_state });
       }
     );
+    socket.on(GAMES.CHAT_MESSAGE_RECEIVED(game_id), data => {
+      
+      const messageContainer = document.querySelector("#messages");
+
+      const chatMessageTemplate = document.querySelector("#chat-message-template");
+      const entry = chatMessageTemplate.content.cloneNode(true);
+      console.log(data + "hi")
+      entry.querySelector(".username").innerText = data.username;
+      entry.querySelector(".message").innerText = data.message;
+      entry.querySelector(".timestamp").innerText = data.timestamp;
+
+      messageContainer.appendChild(entry);
+    })
     socket.on(GAMES.GAME_UPDATED(game_id, user_id ), game_updated => {
       const cardsTemplate = document.querySelector('#card-template')
       const cards = document.querySelector('#game-card-rows');
@@ -56,8 +70,13 @@ fetch("/authentication/teamx", {
         userentry.querySelector(".cardsCount").innerText = element.userinfo.count;
     
         usercount.appendChild(userentry);
+
+        document.getElementById("current_color").textContent = element.current_game.current_color;
+        document.getElementById("current_number").textContent = element.current_game.current_number;
+
     
         if(element.gamecards.length > 0){
+
           element.gamecards.forEach(card => {
             const entry = cardsTemplate.content.cloneNode(true);
 
@@ -70,5 +89,5 @@ fetch("/authentication/teamx", {
         }
       })
       
-    })
-  });
+    })  
+});
