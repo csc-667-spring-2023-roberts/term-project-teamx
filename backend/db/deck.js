@@ -5,7 +5,7 @@ const UPDATE_GAMEBAG_USERID = "UPDATE gamebag SET userid = $1 WHERE gameid=$2 AN
 const SELECT_RANDOMCARDS = "SELECT * FROM gamebag WHERE gameid=$1 AND userid=$2 ORDER BY RANDOM() LIMIT $3";
 const SELECT_GAMECARDS = "SELECT * from gamebag WHERE gameid=$1 AND NOT userid = 0";
 const SELECT_USERCARDS = "SELECT * from gamebag WHERE gameid=$1 AND userid=$2";
-const COUNT_USERCARDS = "SELECT user_id, COUNT(user_id) as user_count, table_order FROM game_users WHERE game_id = $1 GROUP BY user_id, table_order ORDER BY table_order";
+const COUNT_USERCARDS = "SELECT userid, COUNT(userid) as user_count FROM gamebag WHERE gameid = $1 GROUP BY userid ORDER BY userid";
 const TOPCARD = "SELECT * from gamebag WHERE gameid=$1 AND userid = -1";
 const GET_USER_TABLE_ORDER = "SELECT user_id, table_order FROM game_users"
 
@@ -34,19 +34,22 @@ const getCurrentState = async (game_id) => {
 }
 
 const getCurrentStateUser = async (game_id, user_id) => {
+  
   const userCards = await db.any(SELECT_USERCARDS,[game_id,user_id]); 
   const users = await await db.any(GET_USERS, [game_id]);
   const usercardcount = await db.any(COUNT_USERCARDS,[game_id]);
   const usercountMap = new Map();
 
   usercardcount.forEach( element => {
-    usercountMap.set(element.user_id, element.user_count);
+    usercountMap.set(element.userid, element.user_count);
   })
 
-  let current_game = {}
+  let current_game = {
+    current_number : -1,
+    current_color : "red"
+  }
   
   const game = await db.one("SELECT * from game where id=$1",[parseInt(game_id)]);
-  console.log(game)
   if(game.is_started){
     current_game = await db.one(GET_CURRENT_GAME, [parseInt(game_id)]);
   }
@@ -66,8 +69,8 @@ const getCurrentStateUser = async (game_id, user_id) => {
       if(user_id == user.id){
         userstate.gamecards = userCards;
       }
-
       result.push(userstate);
+      console.log(userstate.userinfo)
   })
   return result;
 }

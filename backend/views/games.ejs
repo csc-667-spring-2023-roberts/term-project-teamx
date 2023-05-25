@@ -13,8 +13,10 @@
       </form>
     </div>
 
-    <h1>Game Page (Authenticated)</h1>
+    <h1 id="gamepage-header">Game Page (Authenticated)</h1>
     <h3>GameID:<%= game_id %></h3>
+    <br>
+    <h3>USER ID: <p id="userid-head"></p></h3>
 
     <div id="game">
 
@@ -22,96 +24,82 @@
       <form method="post" action="/games/exit/<%= game_id %>">
         <input type="submit" value="Exit"/>
       </form>
-
       <!-- Start Button -->
-      <form method="get" action="/games/<%= game_id %>/start">
-        <input type="submit" value="Start"/>
-      </form>
+
+      <button onclick="ClickUrlGET(`/games/<%=game_id%>/start`)">start</button>
 
       <!-- Draw Card Button -->
-      <form method="post" action="/games/<%= game_id %>/draw">
-        <input type="submit" value="Draw"/>
-      </form>
+      <button onclick="ClickUrlPOST(`/games/<%=game_id%>/draw`)">draw</button>
+      <script>
+        window.addEventListener("load", function() {
+          const url=`/games/init/<%=game_id%>`
+        fetch(url,{
+          method: "get"
+        }).then(value => {
 
-      <div id="users">
-        <div class="user">
-          <span class="username">Host:<%= creating_user %></span>
-          <div class="cards"></div>
-        </div>
-      </div>
+        })
+        })
+        
+        function ClickUrlPOST(url){
+          console.log(url)
+          fetch(url,{
+            method: "post"
+          })
+        }
+        function ClickUrlGET(url){
+          console.log(url)
+          fetch(url,{
+            method: "get"
+          })
+        }
+      </script>
+
+      
     </div>
 
+    <div>
+      <div id="users-cardcount">
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Total Cards Holding</th>
+            </tr>          
+          </thead>
+          <tbody id="players">
+            <tr class="playersinfo">
+              <th class="username"></th>
+              <th class="count"></th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <span>TOP Card</span>
+      <div id="topcard"></div>
+    </div>
 
-    <!-- A User -->
-    <template id="user-template">
-        <span class="username"></span>
-        <div class="cardsCount"></div>
+    <template id="topcard-template" >
+      <span class="color"></span>
+      <span class="value"></span>
+      <span class="userid"></span>
     </template>
 
-    <div id="user-count">
-      <span class="username"></span>
-      <span class="count"></span>
-    </div>
-
+    <template id="players-template">
+      <tr>
+        <th class="username"></th>
+        <th class="count"></th>
+      </tr>
+    </template>
     <!-- A Card -->
     <div>
-      <table>
-        <thead>
-          <tr>
-            <th>Color</th>
-            <th>Value</th>
-            <th>User ID</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!--- Card row to display the card-->
-          <% if(game_state.length > 0){ %>
-            <% game_state.forEach( game => { %>
-              <h4>TOP CARD</h4>
-              <div id="current-card">
-                <p id="current_color"></p>
-                <p id="current_number"></p>
-              </div> 
-             <% if(game.users == creating_user ) { %>
-                <% game.gamecards.forEach(card => { %>
-                  <tr>
-                    <td><%= card.value %></td>
-                    <td><%= card.color %></td>
-                    <td><%= card.userid %></td>
-                  </tr>
-                  <% const imgval = `${card.color}_${card.value}_${card.specialcard}` %>
-                  <img id="image-card" onclick="handleOnImageClick('<%= JSON.stringify(card)%>')" src="/img/<%= imgval %>.png" alt="<%= imgval %> image not available">
-                  <script>
-                    function handleOnImageClick(card){
-                      console.log(card)
-                      fetch("/games/play/<%= game_id %>",{
-                        method: "post",
-                        headers: { "Content-Type": "application/json" },
-                        body: card,
-                      })
-                    }
-                  </script>
-                <% }) %>
-              <% } %>
-            <% }) %>
-          <% } %>
-          <tr id="game-card-rows">
-            <td class="color"></td>
-            <td class="number"></td>
-            <td class="userId"></td>
-          </tr>
-          <!-- Adding more rows from template -->
-        </tbody>
-      </table>
+      <div id="game-card-rows">
+            <img clas="cardimage">
+        </div>
     </div>
 
 
     <template id="card-template">
-      <tr>
-        <td class="number"></td>
-        <td class="color"></td>
-        <td class="userId"></td>
-      </tr>
+      <img class="cardimage" src="" >
     </template>
 
     <!-- Chat Area -->
@@ -135,3 +123,23 @@
 
   </body>
 </html>
+
+
+
+<div id="users">
+  <div class="user">
+    <span class="username">Host:<%= creating_user %></span>
+    <div class="cards"></div>
+  </div>
+</div>
+
+ <!-- A User -->
+ <template id="user-template">
+  <span class="username"></span>
+  <div class="cardsCount"></div>
+</template>
+
+<div id="user-count">
+<span class="username"></span>
+<span class="count"></span>
+</div>

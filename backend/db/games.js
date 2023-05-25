@@ -8,7 +8,7 @@ const RUNNING_GAMES = "SELECT id FROM game WHERE is_started = true AND is_alive 
 const AVAILABLE_GAMES = "SELECT id FROM game WHERE is_started = false AND is_alive = true AND id NOT IN (SELECT game_id FROM game_users WHERE user_id=$1)";
 const AVAILABLE_GAMES_LIST = "SELECT game_id as id FROM game_users WHERE game_id NOT IN (SELECT game_id FROM game_users WHERE user_id=$1) AND game_id IN (SELECT id AS game_id FROM game WHERE is_started=false AND is_alive=true)";
 const UPDATE_IS_ALIVE = "UPDATE game SET is_alive=false where $id = $1";
-const IS_STARTED = "select is_started from game WHERE id = $1";
+const IS_STARTED = "SELECT EXISTS (select * from game WHERE id = $1)";
 
 //Game-Users SQL Queries
 const GET_EVERYTHING_GAME_USERS = "SELECT * FROM game_users";
@@ -31,17 +31,30 @@ const GAMEBAG = "INSERT INTO gamebag (value, color, gameid, userid, specialcard 
 const UPDATE_GAMEBAG_USERID = "UPDATE gamebag SET userid = $1 WHERE gameid=$2 AND value=$3 AND color=$4 AND specialcard=$5";
 const SELECT_RANDOMCARDS = "SELECT * FROM gamebag WHERE gameid=$1 AND userid=$2 ORDER BY RANDOM() LIMIT $3";
 const SELECT_GAMECARDS = "SELECT * from gamebag WHERE gameid=$1 AND NOT userid = 0";
-
+const SELECT_USER_CARDS_COUNT = "SELECT count(*) FROM gamebag WHERE gameid=$1 AND userid=$2";
 const SELECT_GAME_USER = "SELECT * FROM game_users WHERE game_id = $1 AND user_id=$2";
+const REMOVE_USER_GAMEBAG = "UPDATE gamebag SET userid = 0 WHERE gameid=$1 AND userid = $2";
 
 //current_game Queries
 const GET_CURRENT_GAME = "SELECT * FROM current_game WHERE game_id = $1"
 const UPDATE_CURRENT_GAME = "UPDATE current_game SET current_number=$1, current_color=$2, current_direction=$3, user_id=$4, specialcard = $5, current_buffer=$6, buffer_count=$7 WHERE game_id=$8"
-const UPDATE_CURRENT_USER_DIRECTION = "UPDATE current_game SET current_user=$1 AND current_direciton=$2 WHERE game_id=$3";
+const UPDATE_CURRENT_USER_DIRECTION = "UPDATE current_game SET user_id=$1, current_direction=$2 WHERE game_id=$3";
 const INSERT_CURRENT_GAME = "INSERT INTO current_game (current_number, current_color, current_direction, user_id, specialcard, current_buffer, buffer_count, game_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)"
+const UPDATE_CURRENT_GAME_USER = "UPDATE current_game SET user_id =$1 WHERE game_id = $2"
 
 const is_started = async (game_id) => {
-  return await db.one(IS_STARTED,[game_id]);
+  const games= await db.any("SELECT * from game");
+  let gameres = false
+  let gamestarted = false
+  games.forEach(game => {
+    if(game.id == game_id){
+      gameres = true
+      if(game.is_started){
+        gamestarted = true
+      }
+    }
+  })
+  return gamestarted
 }
 
 //Create a Game
@@ -107,8 +120,8 @@ const start = async (game_id,user_id) => {
     await db.none(GAMEBAG,["2",element,game_id,0,'TRUE']);
     await db.none(GAMEBAG,["0",element,game_id,0,'TRUE']);
     await db.none(GAMEBAG,["-1",element,game_id,0,'TRUE']);
-    await db.none(GAMEBAG,["4","nocolor",game_id,0,'TRUE']);
-    await db.none(GAMEBAG,["0","nocolor",game_id,0,'TRUE']);
+    await db.none(GAMEBAG,["4",element,game_id,0,'TRUE']);
+    await db.none(GAMEBAG,["-4",element,game_id,0,'TRUE']);
   });
 
   //Player Count for the Game when Start is pressed
@@ -128,42 +141,31 @@ const start = async (game_id,user_id) => {
 
   //Fill the Map with the IDs of the users in the game
   var i=0;
+  let usersArray = []
   current_game_users.forEach(element => {
     map.set(i,element["id"]);
+    usersArray.push(element.id)
     i++;
   })
 
   //Update the state of the Game (Is_Started = true)
   await db.none("UPDATE game SET is_started=true WHERE id=$1",[game_id]);
 
-  let shuffle_cards;
-  var count=1;
+  var count=0;
 
   //
-  await db.multi(SELECT_RANDOMCARDS,[game_id,0,playerCount*7]).then(
-    (data) =>{
-      shuffle_cards = data[0];
-    }
-  );
+  let shuffle_cards =  []
+  console.log(usersArray)
+  for(let i = 0;i < (playerCount*7); i+=1){
+    const shuff = await db.one(SELECT_RANDOMCARDS,[game_id,0,1])
+    await db.none(UPDATE_GAMEBAG_USERID,[usersArray[(i)%(usersArray.length)],shuff["gameid"],shuff["value"],shuff["color"],shuff["specialcard"]]);
+    shuffle_cards.push(shuff)
+  }
   
-  //Assigning shuffled cards to the palyers
-  await shuffle_cards.forEach(card => {
-    db.none(UPDATE_GAMEBAG_USERID,[map.get(count%playerCount),card["gameid"],card["value"],card["color"],card["specialcard"]]);
-    count=count+1;
-  })
-
   await db.none(INSERT_CURRENT_GAME,[-1,"nocolor",true,user_id,false,0,0,parseInt(game_id)])
-  //await db.none(UPDATE_CURRENT_GAME,[-1,"nocolor",true,-1,false,0,0,parseInt(game_id)]);
 
-  console.log("hello")
-  console.log(await db.one(GET_CURRENT_GAME,[parseInt(game_id)]));
-  // currentState.forEach(card => {
-  //   console.log("Card: [ gameid:" + card.gameid + " userid:" + card.userid + " value:" + card.value + " color:" + card.color + " specialcard:" + card.specialcard + " ]"); //Debug
-  // });
-  const currentState = await Deck.getCurrentStateUser(game_id,user_id);
-
-  return currentState;
 }
+
 
 const nextUser = async (game_id, user_id) => {
   const user = await db.one(SELECT_GAME_USER,[game_id,user_id]);
@@ -171,7 +173,6 @@ const nextUser = async (game_id, user_id) => {
   game_users.sort((a,b) => a.table_order - b.table_order);
   var index = -1
   var count = 0
-  console.log(game_users);
   game_users.forEach( game_user => {
     if(game_user.user_id == user_id){
       index = count;
@@ -182,7 +183,7 @@ const nextUser = async (game_id, user_id) => {
   const currentgames = await db.any(GET_CURRENT_GAME,[game_id]);
   console.log(currentgames)
   currentgames.forEach(currentgame => {
-    if(currentgame.current_direction = 1){
+    if(currentgame.current_direction){
       index=(index+1)%game_users.length;
     } else {
       if(index == 0){
@@ -200,19 +201,87 @@ const nextUser = async (game_id, user_id) => {
  
 }
 
-const checkCard = async (game_id,user_id,card) => {
-  const current_game = await db.one(GET_CURRENT_GAME,[game_id]);
-  console.log(JSON.stringify(card) + "card in checkcard")
-  console.log(JSON.stringify(current_game) + "currentgames in checkcard")
-  if(current_game.user_id == -1 || current_game.user_id == card.userid){
-    console.log(current_game.current_color + " color "+card.color);
-    if((current_game.current_number == -1 && current_game.current_color == "nocolor") || card.value == current_game.current_number || card.color == current_game.current_color){
-      const nextUserId = await nextUser(game_id,user_id);
-      await db.none(UPDATE_CURRENT_GAME,[parseInt(card.value),card.color,true,nextUserId,card.specialcard, 0, 0, card.gameid])
-      return true
+const updateuser = async (game_id, user_id) => {
+  console.log(user_id)
+  await db.none(UPDATE_CURRENT_GAME_USER,[user_id,game_id]);
+}
+
+const cardCheck = async (current_game,card) => {
+  if(current_game.current_buffer > 0 && current_game.specialcard == true ){
+    if(parseInt(card.value)!=current_game.current_buffer){
+      for( let i in Range(current_game.current_buffer*current_game.buffer_count)){
+        await Deck.getOneCardFromDeck(card.userid,card.gameid,1);
+      }
+      await db.none(UPDATE_CURRENT_GAME,[current_game.current_number,current_game.current_color,current_game.current_direction,current_game.user_id,current_game.specialcard, 0, 0, current_game.game_id])
+    }
+    else{
+      const nextUserId = await nextUser(card.gameid,card.userid);
+      await db.none(UPDATE_CURRENT_GAME,[-1,card.color,current_game.current_direction,nextUserId,card.specialcard, current_game.current_buffer, current_game.buffer_count+1, card.gameid])
     }
   }
-  return false
+  if(card.specialcard == true){
+    console.log(JSON.stringify(card) + "cardCheck func")
+
+    if(card.color == current_game.current_color || card.color == "nocolor" || parseInt(card.value) == -4){
+      console.log(card)
+      if(parseInt(card.value) == 0){
+        const nextUserId = await nextUser(card.gameid,card.userid);
+        const nextnextUserId = await nextUser(card.gameid,nextUserId)
+        console.log(nextnextUserId);
+        await db.none(UPDATE_CURRENT_GAME,[-1,card.color,current_game.current_direction,nextnextUserId,card.specialcard, 0, 0, card.gameid])
+      }
+      if(parseInt(card.value) == -1){
+        await db.none(UPDATE_CURRENT_USER_DIRECTION,[card.userid,!current_game.current_direction,card.gameid])
+        const nextUserId = await nextUser(card.gameid,card.userid);
+        await db.none(UPDATE_CURRENT_GAME,[-1,card.color,current_game.current_direction,nextUserId,card.specialcard, 0, 0, card.gameid])
+      }
+      if(parseInt(card.value) > 1 ){
+        const nextUserId = await nextUser(card.gameid,card.userid);
+        await db.none(UPDATE_CURRENT_GAME,[-1,card.color,current_game.current_direction,nextUserId,card.specialcard, parseInt(card.value), current_game.buffer_count+1, card.gameid])
+      }
+      if(parseInt(card.value) == -4){
+        //const nextUserId = await nextUser(card.gameid,card.userid);
+        console.log(card)
+        await db.none(UPDATE_CURRENT_GAME,[-1,"nocolor",current_game.current_direction,card.userid,card.specialcard, 0, 0, card.gameid])
+      }
+    }
+    await Deck.putOneCardintoDeck(card);
+  }
+  if((current_game.current_color == "nocolor") || card.value == current_game.current_number || card.color == current_game.current_color){
+    const nextUserId = await nextUser(card.gameid,card.userid);
+    await db.none(UPDATE_CURRENT_GAME,[parseInt(card.value),card.color,true,nextUserId,card.specialcard, 0, 0, card.gameid])
+    await Deck.putOneCardintoDeck(card);
+  }
+}
+
+const getCurrentGame = async (game_id) => {
+  return await db.one(GET_CURRENT_GAME,[game_id]);
+}
+
+const checkCard = async (game_id,user_id,card) => {
+  
+  console.log(JSON.stringify(card) + "card check")
+
+  console.log(card, game_id);
+  const current_game = await db.one(GET_CURRENT_GAME,[game_id]);
+  if(current_game.user_id == -1 || current_game.user_id == card.userid){
+    
+    //console.log(current_game.current_color + " color "+card.color);
+    await cardCheck(current_game,card);
+    
+    const usercardsCount = await db.one(SELECT_USER_CARDS_COUNT,[game_id,user_id]);
+    const getgameUsers = await db.any(GET_GAME_USERS,[game_id]);
+    console.log(usercardsCount.count + " " + getgameUsers.length);
+    if(usercardsCount.count == 0){
+      await db.none(DELETE_USER_GAME,[user_id,game_id]);
+      const getgameUsers = await db.any(GET_GAME_USERS,[game_id]);
+    }
+    return true;
+  }
+  else{
+    console.log("not your chance, current chance is user id "+ current_game.user_id + "and top card values are " + current_game.current_number + " "+ current_game.current_color)
+  }
+  return false;
 }
 
 const exitFromGameLobby = async (user_id,game_id) => {
@@ -220,28 +289,52 @@ const exitFromGameLobby = async (user_id,game_id) => {
   const player_count = await db.one(GET_GAME_USERS_COUNT,[game_id])
   //deleting the user from the game
   await db.none(DELETE_USER_GAME,[user_id,game_id])
-  //checking the player count, if it is 1 then the game should end and the game will be going to be in a dead state
+
+  if(is_started(game_id)){
+    await db.none(REMOVE_USER_GAMEBAG,[game_id,user_id]);
+    const current_game = await getCurrentGame(game_id);
+    if(current_game.user_id == user_id){
+      const nextUserId = nextUser(game_id,user_id);
+      updateuser(game_id,nextUserId);
+    }
+  }
+    //checking the player count, if it is 1 then the game should end and the game will be going to be in a dead state
   if(player_count == 1){
     //sets the game to dead mode by updating the is_alive to false
     await db.none(UPDATE_IS_ALIVE,[game_id])
   }
 }
 
-const updateCurrentGame = async (card,nextUserId) => {
-  await db.none(UPDATE_CURRENT_GAME,[])
-}
+// const updateCurrentGame = async (card,nextUserId) => {
+//   await db.none(UPDATE_CURRENT_GAME,[])
+// }
 
 const playCard = async(game_id,user_id,card)=>{
-  const val=await checkCard(game_id,user_id,card);
-  if(val){
-    
-    //await updateCurrentGame(card,nextUserId);
-    Deck.putOneCardintoDeck(card);
-    return true;  
-  } else {
-   console.log("Try a valid card else try to draw one"); 
-   return false;
+  console.log("hello world")
+  console.log("play card func" + JSON.stringify(await db.any(GET_CURRENT_GAME,[game_id])));
+  return await checkCard(game_id,user_id,card);
+}
+
+const findUser = async (game_id, user_id) => {
+  console.log(game_id + " " + user_id);
+  const games= await db.any("SELECT * from game");
+  let gameres = false
+  games.forEach(game => {
+    if(game.id == game_id){
+      gameres = true
+    }
+  })
+  if(gameres){
+    const users = await db.any("SELECT * from game_users where game_id=$1",[game_id])
+    let userres = false
+    users.forEach(user => {
+      if(user.user_id == user_id){
+        userres = true;
+      }
+    })
+    return userres
   }
+  return gameres
 }
 
 
@@ -263,4 +356,7 @@ module.exports = {
   player_count,
   is_started,
   nextUser,
+  updateuser,
+  getCurrentGame,
+  findUser,
 };
