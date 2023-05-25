@@ -29,12 +29,10 @@ router.get("/:id", async (request, response) => {
     if (!isInGame) {
       response.redirect("/lobby");
     } else {
-      const game_state = await Deck.getCurrentStateUser(game_id, user_id);
-
+      
       response.render("games", {
         creating_user: user_id,
         game_id: game_id,
-        game_state: game_state
       });
     }
   } catch (error) {
@@ -61,8 +59,7 @@ router.get("/:id/join", async (request, response) => {
 
     response.render("games", {
       creating_user: user_id,
-      game_id: game_id,
-      game_state: data
+      game_id: game_id
     });
   }
 });
@@ -78,10 +75,10 @@ router.get("/:id/start", async (request, response) => {
     await Games.start(parseInt(game_id), user_id);
 
     const users = await Games.getUsers(game_id);
-    users.forEach(async user => {
+    for (const user of users) {
       const user_gamedata = await Deck.getCurrentStateUser(game_id, user.id);
       io.emit(GAMES.GAME_UPDATED(game_id, user.id), user_gamedata);
-    });
+    }
   }
 
   response.send();
@@ -97,10 +94,10 @@ router.post("/play/:id", async (request, response) => {
   const val = await Games.playCard(parseInt(game_id), user_id, card);
 
   if (val) {
-    users.forEach(async user => {
+    for (const user of users) {
       const user_gamedata = await Deck.getCurrentStateUser(game_id, user.id);
       io.emit(GAMES.GAME_UPDATED(game_id, user.id), user_gamedata);
-    });
+    }
   }
 
   response.send();
@@ -116,13 +113,13 @@ router.post("/:id/draw", async (request, response) => {
   if (current_game.user_id == user_id) {
     const card = await Deck.getOneCardFromDeck(user_id, game_id, 1);
     const nextUserId = await Games.nextUser(game_id, user_id);
-    await Games.updateuser(game_id, nextUserId);
+    await Games.updateUser(game_id, nextUserId);
 
     const users = await Games.getUsers(game_id);
-    users.forEach(async user => {
+    for (const user of users) {
       const user_gamedata = await Deck.getCurrentStateUser(game_id, user.id);
       io.emit(GAMES.GAME_UPDATED(game_id, user.id), user_gamedata);
-    });
+    }
   }
 
   response.send();

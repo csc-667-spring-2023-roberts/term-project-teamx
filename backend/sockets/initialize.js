@@ -29,12 +29,6 @@ const initSockets = (app, sessionMiddleware) => {
        game_id = parseInt(game_id?.substring(game_id.lastIndexOf("/") + 1));
      }
 
-     //we are adding the user_id with their socket.id and game_id to store the information
-     Sockets.add(game_id, user_id, socket.id);
-     Sockets.get(game_id).then((data)=>{
-      //console.log(data)
-     });
-
 
      //if there is a game page
     //  if (game_id != 0) {

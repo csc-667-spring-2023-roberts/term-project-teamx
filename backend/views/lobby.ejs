@@ -58,7 +58,7 @@
           <div class="button-container">
             <% if(reJoinGames.length > 0) { %>
               <% for(game of reJoinGames) { %>
-                <a class="join-button" href="/games/<%= game.id %>/join">Join <%= game.id %></a>
+                <a class="join-button" href="/games/<%= game.id %>">Join <%= game.id %></a>
               <% }%>
             <% } %>
             <% if( reJoinGames.length < 1 ) { %>
@@ -72,7 +72,7 @@
           <div class="button-container">
             <% if(runningGames.length > 0) { %>
               <% for(game of runningGames) { %>
-                <a class="join-button" href="/games/<%= game.id %>/join">Join <%= game.id %></a>
+                <a class="join-button" href="/games/<%= game.id %>">Join <%= game.id %></a>
               <% }%>
             <% } %>
             <% if( runningGames.length < 1 ) { %>
