@@ -49,9 +49,10 @@ body {
 }
 
 .lobby-container {
+    min-width: 400px;
     margin: 40px auto;
-    margin-left: 200px;
-    margin-right: 200px;
+    margin-left: 10%;
+    margin-right: 10%;
     padding: 20px;
     border: 1px solid black;
     border-radius: 20px;
@@ -88,5 +89,5 @@ body {
     cursor: pointer;
   }
 
-  
+
 
