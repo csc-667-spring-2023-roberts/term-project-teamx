@@ -206,6 +206,12 @@ input#chatMessage {
   color: #fff;
 }
 
+.topcard-img {
+  width: 100px;
+  border: 10px solid rgb(119, 242, 97);
+  border-radius: 20px;
+}
+
 /* Responsive styles for smaller screens */
 
 @media (max-width: 768px) {

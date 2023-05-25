@@ -204,52 +204,78 @@ const updateuser = async (game_id, user_id) => {
   await db.none(UPDATE_CURRENT_GAME_USER,[user_id,game_id]);
 }
 
-const cardCheck = async (current_game,card) => {
+const cardCheck = async (current_game, card) => {
+  console.log(JSON.stringify(card) + " " + JSON.stringify(current_game) + " dsa")
+  
   if(current_game.current_buffer > 0 && current_game.specialcard == true ){
-    if(parseInt(card.value)!=current_game.current_buffer){
-      for( let i in Range(current_game.current_buffer*current_game.buffer_count)){
+    if(parseInt(card.value)!=current_game.current_buffer || card.specialcard == false){
+      for( let i =0 ; i < (current_game.current_buffer*current_game.buffer_count); i++){
         await Deck.getOneCardFromDeck(card.userid,card.gameid,1);
       }
-      await db.none(UPDATE_CURRENT_GAME,[current_game.current_number,current_game.current_color,current_game.current_direction,current_game.user_id,current_game.specialcard, 0, 0, current_game.game_id])
+      let color = current_game.current_color;
+      if(current_game.current_buffer == 4){
+        color ="nocolor";
+      }
+      await db.none(UPDATE_CURRENT_GAME,[-1,color,current_game.current_direction,card.userid,true, 0, 0, current_game.game_id])
     }
     else{
       const nextUserId = await nextUser(card.gameid,card.userid);
-      await db.none(UPDATE_CURRENT_GAME,[-1,card.color,current_game.current_direction,nextUserId,card.specialcard, current_game.current_buffer, current_game.buffer_count+1, card.gameid])
+      await db.none(UPDATE_CURRENT_GAME,[current_game.current_number,card.color,current_game.current_direction,nextUserId,true, current_game.current_buffer, current_game.buffer_count+1, card.gameid])
+      await Deck.putOneCardintoDeck(card);
     }
   }
+  else {
   if(card.specialcard == true){
-    console.log(JSON.stringify(card) + "cardCheck func")
+    //console.log(JSON.stringify(card) + "cardCheck func")
 
-    if(card.color == current_game.current_color || card.color == "nocolor" || parseInt(card.value) == -4){
-      console.log(card)
-      if(parseInt(card.value) == 0){
+    //if((current_game.specialcard == true )){
+      console.log(JSON.stringify(card) + " card special if after card.color")
+      if(parseInt(card.value) == 0 && card.color == current_game.current_color){
         const nextUserId = await nextUser(card.gameid,card.userid);
         const nextnextUserId = await nextUser(card.gameid,nextUserId)
-        console.log(nextnextUserId);
-        await db.none(UPDATE_CURRENT_GAME,[-1,card.color,current_game.current_direction,nextnextUserId,card.specialcard, 0, 0, card.gameid])
+        //console.log(nextnextUserId);
+        await db.none(UPDATE_CURRENT_GAME,[0,card.color,current_game.current_direction,nextnextUserId,true, 0, 0, card.gameid])
+        await Deck.putOneCardintoDeck(card);
       }
-      if(parseInt(card.value) == -1){
+      if(parseInt(card.value) == -1 && card.color == current_game.current_color){
         await db.none(UPDATE_CURRENT_USER_DIRECTION,[card.userid,!current_game.current_direction,card.gameid])
         const nextUserId = await nextUser(card.gameid,card.userid);
-        await db.none(UPDATE_CURRENT_GAME,[-1,card.color,current_game.current_direction,nextUserId,card.specialcard, 0, 0, card.gameid])
+        await db.none(UPDATE_CURRENT_GAME,[-1,card.color,current_game.current_direction,nextUserId,true, 0, 0, card.gameid])
+        await Deck.putOneCardintoDeck(card);
       }
-      if(parseInt(card.value) > 1 ){
+      if( (parseInt(card.value) ==2 && card.color == current_game.current_color)|| parseInt(card.value) == 4 ){
+        let color = card.color
+        if(parseInt(card.value)==4){
+          color = "nocolor"
+        }
+
+        //console.log("printing the special card +2 and +4 to update the buffer " + JSON.stringify(card))
         const nextUserId = await nextUser(card.gameid,card.userid);
-        await db.none(UPDATE_CURRENT_GAME,[-1,card.color,current_game.current_direction,nextUserId,card.specialcard, parseInt(card.value), current_game.buffer_count+1, card.gameid])
+        await db.none(UPDATE_CURRENT_GAME,[parseInt(card.value),color,current_game.current_direction,nextUserId,true, parseInt(card.value), current_game.buffer_count+1, card.gameid])
+        await Deck.putOneCardintoDeck(card);
       }
       if(parseInt(card.value) == -4){
         //const nextUserId = await nextUser(card.gameid,card.userid);
-        console.log(card)
-        await db.none(UPDATE_CURRENT_GAME,[-1,"nocolor",current_game.current_direction,card.userid,card.specialcard, 0, 0, card.gameid])
+        //console.log(card)
+        await db.none(UPDATE_CURRENT_GAME,[-4,"nocolor",current_game.current_direction,card.userid,true, 0, 0, card.gameid])
+        await Deck.putOneCardintoDeck(card);
       }
+    //}
+    
+    
+  }else{
+    if((current_game.specialcard == true && card.color == current_game.current_color) || current_game.color =="nocolor"){
+      const nextUserId = await nextUser(card.gameid,card.userid);
+      await db.none(UPDATE_CURRENT_GAME,[parseInt(card.value),card.color,true,nextUserId,card.specialcard, 0, 0, card.gameid])
+      await Deck.putOneCardintoDeck(card);
     }
-    await Deck.putOneCardintoDeck(card);
+    else if((current_game.current_color == "nocolor") || card.value == current_game.current_number || card.color == current_game.current_color){
+      const nextUserId = await nextUser(card.gameid,card.userid);
+      await db.none(UPDATE_CURRENT_GAME,[parseInt(card.value),card.color,true,nextUserId,card.specialcard, 0, 0, card.gameid])
+      await Deck.putOneCardintoDeck(card);
+    }
   }
-  if((current_game.current_color == "nocolor") || card.value == current_game.current_number || card.color == current_game.current_color){
-    const nextUserId = await nextUser(card.gameid,card.userid);
-    await db.none(UPDATE_CURRENT_GAME,[parseInt(card.value),card.color,true,nextUserId,card.specialcard, 0, 0, card.gameid])
-    await Deck.putOneCardintoDeck(card);
-  }
+}
 }
 
 const getCurrentGame = async (game_id) => {

@@ -2,7 +2,7 @@ const db = require("./connection.js");
 
 //Gamebag queries
 const UPDATE_GAMEBAG_USERID = "UPDATE gamebag SET userid = $1 WHERE gameid=$2 AND value=$3 AND color=$4 AND specialcard=$5";
-const SELECT_RANDOMCARDS = "SELECT * FROM gamebag WHERE gameid=$1 AND userid=$2 ORDER BY RANDOM() LIMIT $3";
+const SELECT_RANDOMCARDS = "SELECT * FROM gamebag WHERE gameid = $1 AND userid = $2 ORDER BY RANDOM() LIMIT $3;";
 const SELECT_GAMECARDS = "SELECT * from gamebag WHERE gameid=$1 AND NOT userid = 0";
 const SELECT_USERCARDS = "SELECT * from gamebag WHERE gameid=$1 AND userid=$2";
 const COUNT_USERCARDS = "SELECT userid, COUNT(userid) as user_count FROM gamebag WHERE gameid = $1 GROUP BY userid ORDER BY userid";
@@ -22,6 +22,7 @@ const putOneCardintoDeck = async (card) => {
 }
 
 const getOneCardFromDeck = async (user_id,game_id,count) => {
+  
   const card = await db.one(SELECT_RANDOMCARDS,[game_id,0,count]);
   await db.none(UPDATE_GAMEBAG_USERID,[user_id,card["gameid"],card["value"],card["color"],card["specialcard"]]);
   return { card }
@@ -34,7 +35,7 @@ const getCurrentState = async (game_id) => {
 }
 
 const getCurrentStateUser = async (game_id, user_id) => {
-  
+
   const userCards = await db.any(SELECT_USERCARDS,[game_id,user_id]); 
   const users = await await db.any(GET_USERS, [game_id]);
   const usercardcount = await db.any(COUNT_USERCARDS,[game_id]);
