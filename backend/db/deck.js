@@ -46,7 +46,8 @@ const getCurrentStateUser = async (game_id, user_id) => {
 
   let current_game = {
     current_number : -1,
-    current_color : "red"
+    current_color : "red",
+    specialcard : "true"
   }
   
   const game = await db.one("SELECT * from game where id=$1",[parseInt(game_id)]);
