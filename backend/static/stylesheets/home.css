@@ -1,0 +1,48 @@
+/*Background*/
+body {
+    background-color:royalblue;
+    margin: 0;
+    padding: 0;
+  }
+
+/*The Text Bar At the Top*/
+#project-label{
+    background-color: white;
+    text-align: center;
+}
+
+.logo{
+    display:block;
+    margin-top: 75;
+    margin-left: auto;
+    margin-right: auto;
+    width: 200;
+    height: auto;
+}
+
+.link-button-list-container{
+    display: flex;
+    justify-content: center;
+}
+
+.link-button-list{
+    list-style:none;
+    padding: 0;
+    text-align: center;
+}
+
+.link-button-list li{
+    margin-bottom: 10px;
+}
+
+.link-button{
+    display: inline-block;
+    padding: 10px 20px;
+    text-decoration: none;
+    background-color: black;
+    color:white;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+}
+
