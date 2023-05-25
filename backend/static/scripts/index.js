@@ -3278,7 +3278,9 @@
   var require_frontend = __commonJS({
     "frontend/index.js"() {
       init_esm4();
-      var socket = lookup2({ query: { path: window.location.pathname } });
+      var socket = lookup2({
+        query: { path: window.location.pathname }
+      });
       document.querySelector("input#chatMessage").addEventListener("keydown", (event) => {
         if (event.keyCode !== 13) {
           return;
@@ -3288,7 +3290,9 @@
         const gameId = window.location.pathname.split("/").pop();
         fetch(`/chat/${gameId}`, {
           method: "post",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({ message })
         });
       });

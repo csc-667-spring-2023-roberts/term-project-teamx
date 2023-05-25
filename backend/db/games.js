@@ -101,8 +101,6 @@ const getEverythingGameUsers = async () => {return await db.any(GET_EVERYTHING_G
 
 const player_count = async (game_id) => {return await db.one(COUNT_PLAYERS,[game_id]);};
 
-const display_top_car = async (game_id) => {return await db.one(GET_CURRENT_GAME)}
-
 // Map to store the users from the users table and giving the shuffling cards 
 // Outside the start block because we can use that in future when playing the game to use it a queue.
 let map = new Map;
@@ -161,7 +159,7 @@ const start = async (game_id,user_id) => {
     await db.none(UPDATE_GAMEBAG_USERID,[usersArray[(i)%(usersArray.length)],shuff["gameid"],shuff["value"],shuff["color"],shuff["specialcard"]]);
     shuffle_cards.push(shuff)
   }
-  
+
   await db.none(INSERT_CURRENT_GAME,[-1,"nocolor",true,user_id,false,0,0,parseInt(game_id)])
 
 }

@@ -7,130 +7,140 @@
   </head>
   
   <body>
-    <div id="buttons-in-gamepage">
-      
-      <form action="/lobby" method="get">
-        <input type="submit" value="Lobby">
-      </form>
-      
-      <!-- Exit Button -->
-      <form method="post" action="/games/exit/<%= game_id %>">
-        <input type="submit" value="Exit"/>
-      </form>
-      
-      <!-- Start Button -->
-      <button onclick="ClickUrlGET(`/games/<%=game_id%>/start`)">start</button>
+    <div id="page-left">
+      <div id="buttons-in-gamepage">
+        
+        <form action="/lobby" method="get">
+          <input type="submit" value="Lobby">
+        </form>
+        
+        <!-- Exit Button -->
+        <form method="post" action="/games/exit/<%= game_id %>">
+          <input type="submit" value="Exit"/>
+        </form>
+        
+        <!-- Start Button -->
+        <button onclick="ClickUrlGET(`/games/<%=game_id%>/start`)">start</button>
 
-      <!-- Draw Card Button -->
-      <button onclick="ClickUrlPOST(`/games/<%=game_id%>/draw`)">draw</button>
+        <!-- Draw Card Button -->
+        <button onclick="ClickUrlPOST(`/games/<%=game_id%>/draw`)">draw</button>
 
-    </div>
+      </div>
 
-    <h1 id="gamepage-header">Game Page (Authenticated)</h1>
-    <h3>GameID:<%= game_id %> USER ID: <p id="userid-head"> </p></h3>
+      <h1 id="gamepage-header">Game Page (Authenticated)</h1>
+      <h3>GameID:<%= game_id %> <p id="userid-head"> </p></h3>
 
-    <!-- Displaying players username and their total number of cards holding-->
-    <div id="users-cardcount">
+      <!-- Displaying players username and their total number of cards holding-->
+      <div id="users-cardcount">
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Total Cards Holding</th>
+            </tr>          
+          </thead>
+          <tbody id="players">
+            <tr class="playersinfo">
+              <th class="username"></th>
+              <th class="count"></th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+
       <table>
         <thead>
           <tr>
-            <th>Username</th>
-            <th>Total Cards Holding</th>
-          </tr>          
-        </thead>
-        <tbody id="players">
-          <tr class="playersinfo">
-            <th class="username"></th>
-            <th class="count"></th>
+            <th>Color</th>
+            <th>Value</th>
+            <th>Current Turn UserId</th>
           </tr>
+        </thead>
+        <tbody id="topcard">
         </tbody>
       </table>
-    </div>
 
-
-    <span>TOP Card</span>
-    <div id="topcard"></div>
-
-    
-
-    <template id="players-template">
-      <tr>
-        <th class="username"></th>
-        <th class="count"></th>
-      </tr>
-    </template>
-    <!-- A Card -->
-    <div>
-      <div id="game-card-rows">
-            <img clas="cardimage">
-        </div>
-    </div>
-
-
-    <!-- Chat Area -->
-    <div id="chat">Chat area</div>
-    <!-- Chat Box -->
-    <div id="chat-container"> 
-      <div id="messages"></div>
-      <label>
-        <input id="chatMessage" name="chat-message" placeholder="Message..."/>
-      </label>
-    </div>
-
-    <!-- A Chat Message -->
-    
-
-   
-    <script>
-      window.addEventListener("load", function() {
-        const url=`/games/init/<%=game_id%>`
-      fetch(url,{
-        method: "get"
-      }).then(value => {
-
-      })
-      })
       
-      function ClickUrlPOST(url){
-        console.log(url)
-        fetch(url,{
-          method: "post"
-        })
-      }
-      function ClickUrlGET(url){
-        console.log(url)
+      
+
+      <!-- A Card -->
+      <div>
+        <div id="game-card-rows">
+              <img clas="cardimage">
+          </div>
+      </div>
+
+
+      <!-- Chat Area -->
+      
+
+      <!-- A Chat Message -->
+ 
+      <div id="users">
+        <div class="user">
+          <span class="username">Host:<%= creating_user %></span>
+          <div class="cards"></div>
+        </div>
+      </div>
+
+      <!-- A User -->
+
+      <div id="user-count">
+      <span class="username"></span>
+      <span class="count"></span>
+      </div>     
+
+    
+      <script>
+        window.addEventListener("load", function() {
+          const url=`/games/init/<%=game_id%>`
         fetch(url,{
           method: "get"
+        }).then(value => {
+
         })
-      }
-    </script>  
-    
+        })
+        
+        function ClickUrlPOST(url){
+          console.log(url)
+          fetch(url,{
+            method: "post"
+          })
+        }
+        function ClickUrlGET(url){
+          console.log(url)
+          fetch(url,{
+            method: "get"
+          })
+        }
+      </script>  
+    </div>
+    <div id="page-right">
+      <div id="chat">Chat area</div>
+      <!-- Chat Box -->
+      <div id="chat-container"> 
+        <div id="messages"></div>
+        <label>
+          <input id="chatMessage" name="chat-message" placeholder="Message..."/>
+        </label>
+      </div>
+    </div>
   </body>
 </html>
 
 
 
-<div id="users">
-  <div class="user">
-    <span class="username">Host:<%= creating_user %></span>
-    <div class="cards"></div>
-  </div>
-</div>
-
- <!-- A User -->
-
-<div id="user-count">
-<span class="username"></span>
-<span class="count"></span>
-</div>
 
 
 
 <!-- Templates for the sockets async data-->
 <template id="topcard-template" >
-  <span class="color"></span>
-  <span class="value"></span>
-  <span class="userid"></span>
+  <tr>
+    <th class="color"></th>
+    <th class="value"></th>
+    <th class="userid"></th>
+  </tr>
 </template>
 
 <template id="user-template">
@@ -148,4 +158,11 @@
     <span class="message"></span>
     <span class="timestamp"></span>
   </div>
+</template>
+
+<template id="players-template">
+  <tr>
+    <th class="username"></th>
+    <th class="count"></th>
+  </tr>
 </template>

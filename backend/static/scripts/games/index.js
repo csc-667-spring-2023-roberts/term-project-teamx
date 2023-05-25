@@ -3337,81 +3337,67 @@
       var import_events = __toESM(require_events());
       var socket = lookup2({ query: { path: window.location.pathname } });
       var userTemplate = document.querySelector("#user-template");
-      var users = document.querySelector("#users");
-      var game_id = getGameId(document.location.pathname);
-      socket.on(import_events.default.GAMES.PLAYER_JOINED(game_id), ({ username }) => {
-        const user = userTemplate.content.cloneNode(true);
-        user.querySelector("span.username").innerText = username;
-        users.appendChild(user);
+      var usersContainer = document.querySelector("#users");
+      var gameID = getGameId(document.location.pathname);
+      socket.on(import_events.default.GAMES.PLAYER_JOINED(gameID), ({ username }) => {
+        const userElement = userTemplate.content.cloneNode(true);
+        userElement.querySelector("span.username").innerText = username;
+        usersContainer.appendChild(userElement);
       });
-      socket.on(
-        import_events.default.GAME_STARTING,
-        (data) => console.log(import_events.default.GAME_STARTING, { data })
-      );
+      socket.on(import_events.default.GAME_STARTING, (data) => {
+        console.log(import_events.default.GAME_STARTING, { data });
+      });
       fetch("/authentication/teamx", {
         method: "post"
-      }).then((r) => r.json()).then(({ id: user_id }) => {
-        socket.on(
-          import_events.default.GAMES.GAME_STATE_UPDATED(game_id, user_id),
-          async (game_state) => {
-            console.log({ game_state });
-          }
-        );
-        socket.on(import_events.default.CHAT_MESSAGE_RECEIVED(game_id), (data) => {
+      }).then((response) => response.json()).then(({ id: userID }) => {
+        socket.on(import_events.default.GAMES.GAME_STATE_UPDATED(gameID, userID), async (gameState) => {
+          console.log({ gameState });
+        });
+        socket.on(import_events.default.CHAT_MESSAGE_RECEIVED(gameID), (data) => {
           const messageContainer = document.querySelector("#messages");
           const chatMessageTemplate = document.querySelector("#chat-message-template");
-          const entry = chatMessageTemplate.content.cloneNode(true);
-          entry.querySelector(".username").innerText = data.username;
-          entry.querySelector(".message").innerText = data.message;
-          entry.querySelector(".timestamp").innerText = data.timestamp;
-          messageContainer.appendChild(entry);
+          const chatMessageElement = chatMessageTemplate.content.cloneNode(true);
+          chatMessageElement.querySelector(".username").innerText = data.username;
+          chatMessageElement.querySelector(".message").innerText = data.message;
+          chatMessageElement.querySelector(".timestamp").innerText = data.timestamp;
+          messageContainer.appendChild(chatMessageElement);
         });
-        socket.on(import_events.default.GAME_UPDATED(game_id, user_id), (game_updated) => {
-          const cardsTemplate = document.querySelector("#card-template");
-          const cards = document.querySelector("#game-card-rows");
-          while (cards.firstChild) {
-            cards.removeChild(cards.firstChild);
-          }
-          const playertemplate = document.querySelector("#players-template");
-          const players = document.querySelector("#players");
-          while (players.firstChild) {
-            players.removeChild(players.firstChild);
-          }
-          game_updated.forEach((element) => {
-            const userentry = playertemplate.content.cloneNode(true);
-            userentry.querySelector(".username").innerText = element.userinfo.username;
-            userentry.querySelector(".count").innerText = element.userinfo.count;
-            players.appendChild(userentry);
-            const topcardtemplate = document.querySelector("#topcard-template");
-            const topcard = document.querySelector("#topcard");
-            while (topcard.firstChild) {
-              topcard.removeChild(topcard.firstChild);
-            }
-            const topcardentry = topcardtemplate.content.cloneNode(true);
-            topcardentry.querySelector(".color").innerText = element.current_game.current_color;
-            topcardentry.querySelector(".value").innerText = element.current_game.current_number;
-            topcardentry.querySelector(".userid").innerText = element.current_game.user_id;
-            topcard.appendChild(topcardentry);
-            document.getElementById("userid-head").innerText = user_id;
-            if (element.gamecards.length > 0) {
-              element.gamecards.forEach((card) => {
-                const entry = cardsTemplate.content.cloneNode(true);
-                const imageval = `/img/` + card.color + "_" + card.value + "_" + card.specialcard + `.png`;
-                const image = entry.querySelector(".cardimage");
-                if (image) {
-                  image.src = imageval;
-                  image.addEventListener("click", function() {
-                    const url2 = "/games/play/" + card.gameid;
-                    fetch(url2, {
-                      method: "post",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify(card)
-                    });
+        socket.on(import_events.default.GAME_UPDATED(gameID, userID), (gameUpdated) => {
+          const cardTemplate = document.querySelector("#card-template");
+          const cardsContainer = document.querySelector("#game-card-rows");
+          cardsContainer.innerHTML = "";
+          const playerTemplate = document.querySelector("#players-template");
+          const playersContainer = document.querySelector("#players");
+          playersContainer.innerHTML = "";
+          gameUpdated.forEach((gameElement) => {
+            const playerEntry = playerTemplate.content.cloneNode(true);
+            playerEntry.querySelector(".username").innerText = gameElement.userinfo.username;
+            playerEntry.querySelector(".count").innerText = gameElement.userinfo.count;
+            playersContainer.appendChild(playerEntry);
+            const topCardTemplate = document.querySelector("#topcard-template");
+            const topCardContainer = document.querySelector("#topcard");
+            topCardContainer.innerHTML = "";
+            const topCardEntry = topCardTemplate.content.cloneNode(true);
+            topCardEntry.querySelector(".color").innerText = gameElement.current_game.current_color;
+            topCardEntry.querySelector(".value").innerText = gameElement.current_game.current_number;
+            topCardEntry.querySelector(".userid").innerText = gameElement.current_game.user_id;
+            topCardContainer.appendChild(topCardEntry);
+            document.getElementById("userid-head").innerText = "UserID: " + userID;
+            if (gameElement.gamecards.length > 0) {
+              gameElement.gamecards.forEach((card) => {
+                const cardEntry = cardTemplate.content.cloneNode(true);
+                const imageURL = `/img/${card.color}_${card.value}_${card.specialcard}.png`;
+                const image = cardEntry.querySelector(".cardimage");
+                image.src = imageURL;
+                image.addEventListener("click", function() {
+                  const url2 = "/games/play/" + card.gameid;
+                  fetch(url2, {
+                    method: "post",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(card)
                   });
-                } else {
-                  console.log("no card found");
-                }
-                cards.appendChild(entry);
+                });
+                cardsContainer.appendChild(cardEntry);
               });
             }
           });
