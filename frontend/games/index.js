@@ -31,6 +31,7 @@ fetch("/authentication/teamx", {
 })
   .then((response) => response.json())
   .then(({ id: userID }) => {
+
     // Socket event listener: Game state updated
     socket.on(GAMES.GAMES.GAME_STATE_UPDATED(gameID, userID), async (gameState) => {
       console.log({ gameState });
