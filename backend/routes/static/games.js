@@ -80,7 +80,6 @@ router.get("/:id/start", async (request, response) => {
     const users = await Games.getUsers(game_id);
     users.forEach(async user => {
       const user_gamedata = await Deck.getCurrentStateUser(game_id, user.id);
-      console.log(user_gamedata);
       io.emit(GAMES.GAME_UPDATED(game_id, user.id), user_gamedata);
     });
   }
