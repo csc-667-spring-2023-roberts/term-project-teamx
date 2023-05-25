@@ -48,7 +48,8 @@ body {
     margin-right: 30%;
 }
 
-.login-form{
+.login-form,
+.registration-form {
     max-width: 300px;
     margin: 40px auto;
     padding: 20px;
@@ -57,13 +58,17 @@ body {
     background-color: white;
 }
 
-.login-form label{
+.login-form label,
+.registration-form label{
     display: block;
     margin-bottom: 5px;
 }
 
 .login-form input[type="email"],
-.login-form input[type="password"] {
+.login-form input[type="password"], 
+.registration-form input[type="username"],
+.registration-form input[type="email"],
+.registration-form input[type="password"]{
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
@@ -71,7 +76,8 @@ body {
     margin-bottom: 10px;
 }
 
-.login-form input[type="submit"] {
+.login-form input[type="submit"],
+.registration-form input[type="submit"] {
     background-color: black;
     color: #fff;
     border: none;
