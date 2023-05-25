@@ -1,0 +1,92 @@
+/*Background*/
+body {
+    background-color:royalblue;
+    margin: 0;
+    padding: 0;
+  }
+
+/*The Text Bar At the Top*/
+#project-label{
+    background-color: white;
+    text-align: center;
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+}
+
+.logo {
+    display: block;
+    margin-top: 15px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 200px;
+    height: auto;
+}
+
+.link-button-container{
+    display: flex;
+    justify-content: space-between;
+}
+
+.link-button{
+    padding: 10px 20px;
+    text-decoration: none;
+    background-color: black;
+    color:white;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+}
+
+.link-button:first-child{
+    margin-left: 30%;
+}
+
+.link-button:last-child{
+    margin-right: 30%;
+}
+
+.lobby-container {
+    margin: 40px auto;
+    margin-left: 200px;
+    margin-right: 200px;
+    padding: 20px;
+    border: 1px solid black;
+    border-radius: 20px;
+    background-color: white;
+}
+
+.lobby-container h1,
+.lobby-container h3{
+    display: block;
+    margin-bottom: 5px;
+}
+
+.create-game-form input[type="submit"]{
+    background-color: black;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+.games-label{
+    display: block;
+    margin-bottom: 5px;
+}
+
+.join-button{
+    padding: 2px 5px;
+    text-decoration: none;
+    background-color: black;
+    color:white;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+  }
+
+  
+
