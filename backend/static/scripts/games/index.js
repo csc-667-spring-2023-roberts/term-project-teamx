@@ -2045,7 +2045,7 @@
               return typeof payload === "string" || typeof payload === "object";
             case PacketType.EVENT:
             case PacketType.BINARY_EVENT:
-              return Array.isArray(payload) && payload.length > 0;
+              return Array.isArray(payload) && (typeof payload[0] === "string" || typeof payload[0] === "number");
             case PacketType.ACK:
             case PacketType.BINARY_ACK:
               return Array.isArray(payload);
@@ -3382,6 +3382,16 @@
             topCardEntry.querySelector(".value").innerText = gameElement.current_game.current_number;
             topCardEntry.querySelector(".userid").innerText = gameElement.current_game.user_id;
             topCardContainer.appendChild(topCardEntry);
+            const topCardImgTemplate = document.querySelector("#topcard-template-img");
+            const topCardImgContainer = document.querySelector("#topcardimg");
+            topCardImgContainer.innerHTML = "";
+            const topCardImg = topCardImgTemplate.content.cloneNode(true);
+            topcardColor = gameElement.current_game.current_color;
+            topcardNumber = gameElement.current_game.current_number;
+            topcardSpecial = gameElement.current_game.specialcard;
+            const topCardImageURL = `/img/${topcardColor}_${topcardNumber}_${topcardSpecial}.png`;
+            topCardImg.querySelector(".topcard-img").src = topCardImageURL;
+            topCardImgContainer.appendChild(topCardImg);
             document.getElementById("userid-head").innerText = "UserID: " + userID;
             if (gameElement.gamecards.length > 0) {
               gameElement.gamecards.forEach((card) => {

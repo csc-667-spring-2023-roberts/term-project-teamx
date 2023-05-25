@@ -89,6 +89,28 @@ fetch("/authentication/teamx", {
         // Append the top card entry to the top card container
         topCardContainer.appendChild(topCardEntry);
 
+        // Display the Image of the TopCard
+        // Create a Top Card entry based on the template
+        const topCardImgTemplate = document.querySelector('#topcard-template-img');
+        const topCardImgContainer = document.querySelector("#topcardimg");
+        // Clear the existing top card
+        topCardImgContainer.innerHTML = "";
+        // Copy to create a new Template
+        const topCardImg = topCardImgTemplate.content.cloneNode(true);
+        // Get the color, value, and specialtype
+        topcardColor = gameElement.current_game.current_color;
+        topcardNumber = gameElement.current_game.current_number;
+        topcardSpecial = gameElement.current_game.specialcard;
+        // Get the Correct Img for the TopCard
+        const topCardImageURL = `/img/${topcardColor}_${topcardNumber}_${topcardSpecial}.png`;
+        // Set the URL to the correct Image(Card)
+        topCardImg.querySelector(".topcard-img").src = topCardImageURL;
+        //Append the entry to the Container
+        topCardImgContainer.appendChild(topCardImg);
+
+
+
+
         // Update the user ID header
         document.getElementById("userid-head").innerText = "UserID: " + userID;
 
