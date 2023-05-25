@@ -42,7 +42,8 @@
     "pug": "^3.0.2",
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1",
-    "ts-loader": "^9.4.2"
+    "ts-loader": "^9.4.2",
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.21.4",
