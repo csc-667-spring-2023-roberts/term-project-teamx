@@ -19,12 +19,7 @@ socket.on(GAMES.GAMES.PLAYER_JOINED(game_id), ({ username }) => {
   users.appendChild(user);
 });
 
-//const user_id = socket.request.session?.user?.id;
 
-//The socket call which updates the cards on the frontend webpage
-
-
-//still in implementation, will comment later
 socket.on(GAMES.GAME_STARTING, (data) =>
   console.log(GAMES.GAME_STARTING, { data })
 );
@@ -36,6 +31,8 @@ fetch("/authentication/teamx", {
 })
   .then((r) => r.json())
   .then(({ id: user_id }) => {
+    
+    
     socket.on(
       GAMES.GAMES.GAME_STATE_UPDATED(game_id, user_id),
       async (game_state) => {
@@ -55,39 +52,38 @@ fetch("/authentication/teamx", {
 
       messageContainer.appendChild(entry);
     })
+
+    
     socket.on(GAMES.GAME_UPDATED(game_id, user_id ), game_updated => {
+    
       const cardsTemplate = document.querySelector('#card-template')
       const cards = document.querySelector('#game-card-rows');
     
-      const userTemplate = document.querySelector('#user-template')
-      const usercount = document.querySelector('#user-count');
+      //removing all the nodes before add the cards from the socket data
       while(cards.firstChild){
         cards.removeChild(cards.firstChild);
       }
      
-
       const playertemplate = document.querySelector("#players-template");
       const players = document.querySelector("#players");
-
       while(players.firstChild){
         players.removeChild(players.firstChild)
       }
       
       game_updated.forEach( element => {
+
         const userentry = playertemplate.content.cloneNode(true)
-        
         userentry.querySelector(".username").innerText = element.userinfo.username;
         userentry.querySelector(".count").innerText = element.userinfo.count;
-    
         players.appendChild(userentry);
 
+
+        //Displaying the Table card to match that card to play
         const topcardtemplate = document.querySelector("#topcard-template");
         const topcard = document.querySelector("#topcard")
-  
         while(topcard.firstChild){
           topcard.removeChild(topcard.firstChild);
         }
-  
         const topcardentry = topcardtemplate.content.cloneNode(true);
         topcardentry.querySelector(".color").innerText = element.current_game.current_color;
         topcardentry.querySelector(".value").innerText = element.current_game.current_number;

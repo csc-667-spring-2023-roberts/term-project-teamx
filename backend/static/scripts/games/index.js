@@ -3369,8 +3369,6 @@
         socket.on(import_events.default.GAME_UPDATED(game_id, user_id), (game_updated) => {
           const cardsTemplate = document.querySelector("#card-template");
           const cards = document.querySelector("#game-card-rows");
-          const userTemplate2 = document.querySelector("#user-template");
-          const usercount = document.querySelector("#user-count");
           while (cards.firstChild) {
             cards.removeChild(cards.firstChild);
           }
