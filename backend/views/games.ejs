@@ -22,9 +22,6 @@
         <!-- Start Button -->
         <button onclick="ClickUrlGET(`/games/<%=game_id%>/start`)">start</button>
 
-        <!-- Draw Card Button -->
-        <button onclick="ClickUrlPOST(`/games/<%=game_id%>/draw`)">draw</button>
-
       </div>
 
       <h1 id="gamepage-header">Game Page (Authenticated)</h1>
@@ -63,7 +60,11 @@
 
       <div id="topcardimg">
       </div>
-      
+      <br>
+      <div>
+        <!-- Draw Card Button -->
+        <button class="draw-button" onclick="ClickUrlPOST(`/games/<%=game_id%>/draw`)">draw</button>
+      </div>
       
 
       <!-- A Card -->
@@ -74,25 +75,7 @@
       </div>
 
 
-      <!-- Chat Area -->
       
-
-      <!-- A Chat Message -->
- 
-      <div id="users">
-        <div class="user">
-          <span class="username">Host:<%= creating_user %></span>
-          <div class="cards"></div>
-        </div>
-      </div>
-
-      <!-- A User -->
-
-      <div id="user-count">
-      <span class="username"></span>
-      <span class="count"></span>
-      </div>     
-
     
       <script>
         window.addEventListener("load", function() {

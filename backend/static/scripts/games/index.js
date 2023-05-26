@@ -3353,15 +3353,6 @@
         socket.on(import_events.default.GAMES.GAME_STATE_UPDATED(gameID, userID), async (gameState) => {
           console.log({ gameState });
         });
-        socket.on(import_events.default.CHAT_MESSAGE_RECEIVED(gameID), (data) => {
-          const messageContainer = document.querySelector("#messages");
-          const chatMessageTemplate = document.querySelector("#chat-message-template");
-          const chatMessageElement = chatMessageTemplate.content.cloneNode(true);
-          chatMessageElement.querySelector(".username").innerText = data.username;
-          chatMessageElement.querySelector(".message").innerText = data.message;
-          chatMessageElement.querySelector(".timestamp").innerText = data.timestamp;
-          messageContainer.appendChild(chatMessageElement);
-        });
         socket.on(import_events.default.GAME_UPDATED(gameID, userID), (gameUpdated) => {
           const cardTemplate = document.querySelector("#card-template");
           const cardsContainer = document.querySelector("#game-card-rows");

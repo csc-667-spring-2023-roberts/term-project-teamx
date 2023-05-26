@@ -1,6 +1,10 @@
 (() => {
+  var __create = Object.create;
   var __defProp = Object.defineProperty;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
   var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getProtoOf = Object.getPrototypeOf;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
   var __esm = (fn, res) => function __init() {
     return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
   };
@@ -11,6 +15,22 @@
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
   };
+  var __copyProps = (to, from, except, desc) => {
+    if (from && typeof from === "object" || typeof from === "function") {
+      for (let key of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key) && key !== except)
+          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+    }
+    return to;
+  };
+  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+    // If the importer is in node compatibility mode or this is not an ESM
+    // file that has been converted to a CommonJS file using a Babel-
+    // compatible transform (i.e. "__esModule" has not been set), then set
+    // "default" to the CommonJS "module.exports" for node compatibility.
+    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+    mod
+  ));
 
   // node_modules/engine.io-parser/build/esm/commons.js
   var PACKET_TYPES, PACKET_TYPES_REVERSE, ERROR_PACKET;
@@ -3274,12 +3294,66 @@
     }
   });
 
+  // frontend/util/game-id.js
+  function getGameId(location2) {
+    const gameId = location2.substring(location2.lastIndexOf("/") + 1);
+    if (gameId === "lobby") {
+      return 0;
+    } else {
+      return parseInt(gameId);
+    }
+  }
+  var init_game_id = __esm({
+    "frontend/util/game-id.js"() {
+    }
+  });
+
+  // constants/events.js
+  var require_events = __commonJS({
+    "constants/events.js"(exports, module) {
+      var PLAYER_JOINED = (game_id) => `game:${game_id}:player-joined`;
+      var GAME_STATE_UPDATED = (game_id, user_id) => `game:${game_id}:${user_id}:updated`;
+      var MAX_PLAYERS = 2;
+      var CHAT_MESSAGE_RECEIVED = (game_id) => `chat${game_id}:message`;
+      var GAME_CREATED = "game:created";
+      var GAME_STARTING = "game:starting";
+      var GAME_UPDATED = (game_id, user_id) => `game${game_id}:${user_id}updated`;
+      module.exports = {
+        GAMES: { PLAYER_JOINED, GAME_STATE_UPDATED },
+        GAME_CREATED,
+        MAX_PLAYERS,
+        GAME_STARTING,
+        GAME_UPDATED,
+        CHAT_MESSAGE_RECEIVED
+      };
+    }
+  });
+
   // frontend/index.js
   var require_frontend = __commonJS({
     "frontend/index.js"() {
       init_esm4();
+      init_game_id();
+      var import_events = __toESM(require_events());
       var socket = lookup2({
         query: { path: window.location.pathname }
+      });
+      var gameID = getGameId(document.location.pathname);
+      fetch("/authentication/teamx", {
+        method: "post"
+      }).then((response) => response.json()).then(({ id: userID }) => {
+        socket.on(import_events.default.GAMES.GAME_STATE_UPDATED(gameID, userID), async (gameState) => {
+          console.log({ gameState });
+        });
+        socket.on(import_events.default.CHAT_MESSAGE_RECEIVED(gameID), (data) => {
+          const messageContainer = document.querySelector("#messages");
+          const chatMessageTemplate = document.querySelector("#chat-message-template");
+          const chatMessageElement = chatMessageTemplate.content.cloneNode(true);
+          chatMessageElement.querySelector(".username").innerText = data.username;
+          chatMessageElement.querySelector(".message").innerText = data.message;
+          chatMessageElement.querySelector(".timestamp").innerText = data.timestamp;
+          messageContainer.appendChild(chatMessageElement);
+        });
       });
       document.querySelector("input#chatMessage").addEventListener("keydown", (event) => {
         if (event.keyCode !== 13) {
@@ -3287,7 +3361,7 @@
         }
         const message = event.target.value;
         event.target.value = "";
-        const gameId = window.location.pathname.split("/").pop();
+        const gameId = getGameId(document.location.pathname);
         fetch(`/chat/${gameId}`, {
           method: "post",
           headers: {
