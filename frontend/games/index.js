@@ -25,6 +25,7 @@ socket.on(GAMES.GAME_STARTING, (data) => {
   console.log(GAMES.GAME_STARTING, { data });
 });
 
+
 // Fetch user ID and perform further socket event listeners and actions
 fetch("/authentication/teamx", {
   method: "post",
@@ -35,22 +36,6 @@ fetch("/authentication/teamx", {
     // Socket event listener: Game state updated
     socket.on(GAMES.GAMES.GAME_STATE_UPDATED(gameID, userID), async (gameState) => {
       console.log({ gameState });
-    });
-
-    // Socket event listener: Chat message received
-    socket.on(GAMES.CHAT_MESSAGE_RECEIVED(gameID), (data) => {
-      // Get the message container
-      const messageContainer = document.querySelector("#messages");
-      // Get the chat message template
-      const chatMessageTemplate = document.querySelector("#chat-message-template");
-      // Clone the template content
-      const chatMessageElement = chatMessageTemplate.content.cloneNode(true);
-      // Update the username, message, and timestamp in the chat message element
-      chatMessageElement.querySelector(".username").innerText = data.username;
-      chatMessageElement.querySelector(".message").innerText = data.message;
-      chatMessageElement.querySelector(".timestamp").innerText = data.timestamp;
-      // Append the chat message element to the message container
-      messageContainer.appendChild(chatMessageElement);
     });
 
     // Socket event listener: Game updated

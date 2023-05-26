@@ -17,10 +17,7 @@ router.post("/:id", async (request, response) => {
     timestamp: Date.now(),
   }
 
-
-  console.log(data)
-
-  io.emit(GAMES.CHAT_MESSAGE_RECEIVED(parseInt(game_id)), data);
+  io.emit(GAMES.CHAT_MESSAGE_RECEIVED(game_id), data);
 
   response.status(200);
 });
