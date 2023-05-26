@@ -31,9 +31,8 @@ fetch("/authentication/teamx", {
       // Clone the template content
       const chatMessageElement = chatMessageTemplate.content.cloneNode(true);
       // Update the username, message, and timestamp in the chat message element
-      chatMessageElement.querySelector(".username").innerText = data.username;
+      chatMessageElement.querySelector(".username").innerText = data.username + ":";
       chatMessageElement.querySelector(".message").innerText = data.message;
-      chatMessageElement.querySelector(".timestamp").innerText = data.timestamp;
       // Append the chat message element to the message container
       messageContainer.appendChild(chatMessageElement);
     });

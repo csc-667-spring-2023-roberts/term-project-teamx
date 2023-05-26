@@ -25,34 +25,40 @@ body {
     height: auto;
 }
 
-.link-button-container{
+.games-buttons-container{
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    justify-content:space-evenly;
+    margin-left: 40%;
+    margin-right: 40%;
 }
 
-.link-button{
-    padding: 10px 20px;
-    text-decoration: none;
+.lobby-form input[type="submit"],
+.exit-form input[type="submit"]{
     background-color: black;
-    color:white;
-    border-radius: 25px;
+    color: #fff;
     border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
     cursor: pointer;
-}
+  }
 
-.link-button:first-child{
-    margin-left: 30%;
+.page-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
 }
-
-.link-button:last-child{
-    margin-right: 30%;
+  
+#page-right {
+    flex: 0 0 300px; /* Adjust the width of the chat column as needed */
+    margin-right: 20px;
 }
 
 .game-container {
+    flex: 1;
     min-width: 400px;
-    margin: 40px auto;
-    margin-left: 10%;
-    margin-right: 10%;
+    margin-left: 20px;
+    margin-right: 20px;
     padding: 20px;
     border: 1px solid black;
     border-radius: 20px;
@@ -80,19 +86,9 @@ body {
     margin-right: 10px;
 }
 
-.lobby-form input[type="submit"],
-.exit-form input[type="submit"]{
-    background-color: black;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-.join-button{
+.start-button{
     display: inline-block;
-    padding: 2px 5px;
+    padding: 10px 30px;
     text-decoration: none;
     background-color: black;
     color:white;
@@ -102,11 +98,34 @@ body {
     margin-bottom: 4px;
   }
 
+#users-cardcount{
+    display: flex;
+    justify-content: center;
+ }
+
+#current-player-turn{
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+ } 
+
 /* Card Image Styling */
+.main-cards {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
 .topcard-img {
     width: 100px;
-    border: 10px solid rgb(119, 242, 97);
+    border: 2px solid black;
     border-radius: 20px;
+}
+
+#game-card-rows{
+    display: flex;
+    justify-content: center;
 }
 
 .cardimage {
@@ -117,9 +136,33 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.user .cards img {
-    width: 50px;
-    height: 75px;
-    margin-right: 5px;
-}
+/*Chat*/
+#chat {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  #chat-container {
+    margin-top: 20px;
+    flex-grow: 1;
+  }
+  
+  #messages {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    flex-grow: 1;
+  }
+  
+  input#chatMessage {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
 

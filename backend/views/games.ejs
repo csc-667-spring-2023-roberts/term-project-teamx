@@ -30,59 +30,57 @@
       </form>
     </div>
     
-
-    <div class="game-container">
-      <div class="game-container-header">
-        <div>
-          <h3>GameID:<%= game_id %></h3>
-          <h3 id="userid-head"></h3>
+    <div class="page-container">
+      <div class="game-container">
+        <div class="game-container-header">
+          <div>
+            <h3>GameID:<%= game_id %></h3>
+            <h3 id="userid-head"></h3>
+          </div>
+          
+          <h1 id="gamepage-header">Game Page</h1>
+          <!-- Start Button -->
+          <button class="start-button" onclick="ClickUrlGET(`/games/<%=game_id%>/start`)">Start</button>
         </div>
         
-        <h1 id="gamepage-header">Game Page</h1>
-        <!-- Start Button -->
-        <button onclick="ClickUrlGET(`/games/<%=game_id%>/start`)">Start</button>
-      </div>
-      
 
-      <!-- Table: Username: Number of Cards Holding-->
-      <div id="users-cardcount">
-        <table>
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Total Cards Holding</th>
-            </tr>
-          </thead>
-          <tbody id="players">
-            <tr class="playersinfo">
-              <th class="username"></th>
-              <th class="count"></th>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <!-- Table: Username: Number of Cards Holding-->
+        <div id="users-cardcount">
+          <table>
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Total Cards Holding</th>
+              </tr>
+            </thead>
+            <tbody id="players">
+              <tr class="playersinfo">
+                <th class="username"></th>
+                <th class="count"></th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-      <span id="current-player-turn">Current Player: ##</span>
+        <span id="current-player-turn">Current Player: ##</span>
 
-      <!-- Where the Image of the Top Card is appended to -->
-      <div id="topcardimg">
-      </div>
+        <!-- Where the Image of the Top Card is appended to -->
+        <div class="main-cards">
+          <button onclick="ClickUrlPOST(`/games/<%=game_id%>/draw`)">
+            <img class="topcard-img" src="/img/option_draw2.png">
+          </button>
+          <div id="topcardimg"></div>
+        </div>
+        
 
-      <!-- A Card -->
-      <div>
-        <div id="game-card-rows">
-              <img class="cardimage">
+        <!-- A Card -->
+        <div>
+          <div id="game-card-rows">
+            <img class="cardimage">
           </div>
+        </div>
+
       </div>
-
-      <!-- A User -->
-
-      <div id="user-count">
-        <span class="username"></span>
-        <span class="count"></span>
-      </div>  
-
-    </div>
     
       <script>
         window.addEventListener("load", function() {
@@ -105,20 +103,22 @@
           })
         }
       </script>
+
+      <div id="page-right">
+        <!-- Chat Area -->
+        <div id="chat">Chat area</div>
+        <!-- Chat Box -->
+        <div id="chat-container"> 
+          <div id="messages"></div>
+          <label>
+            <input id="chatMessage" name="chat-message" placeholder="Message..."/>
+          </label>
+        </div>
+      </div>
         
     </div>
       
-    <div id="page-right">
-      <!-- Chat Area -->
-      <div id="chat">Chat area</div>
-      <!-- Chat Box -->
-      <div id="chat-container"> 
-        <div id="messages"></div>
-        <label>
-          <input id="chatMessage" name="chat-message" placeholder="Message..."/>
-        </label>
-      </div>
-    </div>
+    
 
   </body>
 </html>
@@ -138,9 +138,7 @@
 
 <!-- A TopCard Template -->
 <template id="topcard-template-img">
-  <button onclick="ClickUrlPOST(`/games/<%=game_id%>/draw`)">
-    <img class="topcard-img" src="">
-  </button>
+  <img class="topcard-img" src="">
 </template>
 
 <!-- A User Template -->
@@ -159,7 +157,6 @@
   <div>
     <span class="username"></span>
     <span class="message"></span>
-    <span class="timestamp"></span>
   </div>
 </template>
 

@@ -3349,9 +3349,8 @@
           const messageContainer = document.querySelector("#messages");
           const chatMessageTemplate = document.querySelector("#chat-message-template");
           const chatMessageElement = chatMessageTemplate.content.cloneNode(true);
-          chatMessageElement.querySelector(".username").innerText = data.username;
+          chatMessageElement.querySelector(".username").innerText = data.username + ":";
           chatMessageElement.querySelector(".message").innerText = data.message;
-          chatMessageElement.querySelector(".timestamp").innerText = data.timestamp;
           messageContainer.appendChild(chatMessageElement);
         });
       });
