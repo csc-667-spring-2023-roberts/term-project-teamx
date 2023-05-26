@@ -113,7 +113,7 @@ router.post("/:id/draw", async (request, response) => {
   if (current_game.user_id == user_id) {
     const card = await Deck.getOneCardFromDeck(user_id, game_id, 1);
     const nextUserId = await Games.nextUser(game_id, user_id);
-    await Games.updateUser(game_id, nextUserId);
+    await Games.updateuser(game_id, nextUserId);
 
     const users = await Games.getUsers(game_id);
     for (const user of users) {
