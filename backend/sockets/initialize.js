@@ -1,8 +1,5 @@
 const http = require("http");
 const { Server } = require("socket.io");
-const Sockets = require("../db/sockets");
-const GAMES = require("../../constants/events")
-const Deck = require("../../backend/db/deck.js")
 
 const initSockets = (app, sessionMiddleware) => {
   const server = http.createServer(app);
@@ -28,15 +25,6 @@ const initSockets = (app, sessionMiddleware) => {
       //else we take the id from the last 
        game_id = parseInt(game_id?.substring(game_id.lastIndexOf("/") + 1));
      }
-
-
-     //if there is a game page
-    //  if (game_id != 0) {
-    //   //fetching the current state of the cards in the deck
-    //   Deck.getCurrentStateUser(game_id,user_id).then((data)=>{
-    //     socket.emit(GAMES.GAME_UPDATED,data);
-    //   })
-    // }
   });
 
   app.set("io", io);

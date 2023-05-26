@@ -101,11 +101,11 @@ const getEverythingGameUsers = async () => {return await db.any(GET_EVERYTHING_G
 
 const player_count = async (game_id) => {return await db.one(COUNT_PLAYERS,[game_id]);};
 
-// Map to store the users from the users table and giving the shuffling cards 
-// Outside the start block because we can use that in future when playing the game to use it a queue.
-let map = new Map;
 
-//Needs work
+const getCurrentGame = async (game_id) => {
+  return await db.one(GET_CURRENT_GAME,[game_id]);
+}
+
 const start = async (game_id,user_id) => {
 
   const colors=["blue","green","yellow","red"];
@@ -129,27 +129,14 @@ const start = async (game_id,user_id) => {
   //Get the Users of the Current Game
   let current_game_users = await getUsers(game_id);
   
-  //Debug
-  if (current_game_users && Array.isArray(current_game_users)){
-    current_game_users.forEach((item) => {
-      //console.log("CurrentGameUsers (DB.games.js) = [ id:" + item.id + " username:" + item.username + " ]");
-    });
-  }
-  //else console.log("Error Reading CurrentGameUsers");
-
-  //Fill the Map with the IDs of the users in the game
-  var i=0;
+  //Fill the usersArray with the IDs of the users in the game
   let usersArray = []
   current_game_users.forEach(element => {
-    map.set(i,element["id"]);
     usersArray.push(element.id)
-    i++;
   })
 
   //Update the state of the Game (Is_Started = true)
   await db.none("UPDATE game SET is_started=true WHERE id=$1",[game_id]);
-
-  var count=0;
 
   //
   let shuffle_cards =  []
@@ -285,10 +272,6 @@ const cardCheck = async (current_game, card) => {
     }
   }
 }
-}
-
-const getCurrentGame = async (game_id) => {
-  return await db.one(GET_CURRENT_GAME,[game_id]);
 }
 
 const checkCard = async (game_id,user_id,card) => {
