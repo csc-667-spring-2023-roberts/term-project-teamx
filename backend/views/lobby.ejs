@@ -41,39 +41,45 @@
 
         <!-- Available Games -->
         <label class="games-label"> Available Games (Not Joined, Not Started) <br></label>
-        <% if(availableGames.length > 0) { %>
-          <% for(game of availableGames) { %>
-            <a class="join-button" href="/games/<%= game.id %>/join">Join <%= game.id %></a>
-          <% }%>
-        <% } %>
-        <% if( availableGames.length < 1 ) { %>
-        No Games are Available to Join, instead create one
-        <% } %>
-        <br><br>
+          <div class="button-container">
+            <% if(availableGames.length > 0) { %>
+              <% for(game of availableGames) { %>
+                <a class="join-button" href="/games/<%= game.id %>/join">Join <%= game.id %></a>
+              <% }%>
+            <% } %>
+            <% if( availableGames.length < 1 ) { %>
+              No Games are Available to Join, instead create one
+            <% } %>
+          </div>
+        <br>
 
         <!-- Rejoinable Games -->
         <label class="games-label"> Games (Joined, Not Started) <br></label>
-        <% if(reJoinGames.length > 0) { %>
-          <% for(game of reJoinGames) { %>
-            <a class="join-button" href="/games/<%= game.id %>">Join <%= game.id %></a>
-          <% }%>
-        <% } %>
-        <% if( reJoinGames.length < 1 ) { %>
-        No Games are Available to Join, instead create one
-        <% } %>
-        <br><br>
+          <div class="button-container">
+            <% if(reJoinGames.length > 0) { %>
+              <% for(game of reJoinGames) { %>
+                <a class="join-button" href="/games/<%= game.id %>">Join <%= game.id %></a>
+              <% }%>
+            <% } %>
+            <% if( reJoinGames.length < 1 ) { %>
+              No Games are Available to Join, instead create one
+            <% } %>
+          </div>
+        <br>
 
         <!-- Running Games -->
         <label class="games-label">Running Games (Joined, Started) <br></label>
-        <% if(runningGames.length > 0) { %>
-          <% for(game of runningGames) { %>
-            <a class="join-button" href="/games/<%= game.id %>">Join <%= game.id %></a>
-          <% }%>
-        <% } %>
-        <% if( runningGames.length < 1 ) { %>
-        No Games are Available to Join, instead create one
-        <% } %>
-        <br><br>
+          <div class="button-container">
+            <% if(runningGames.length > 0) { %>
+              <% for(game of runningGames) { %>
+                <a class="join-button" href="/games/<%= game.id %>">Join <%= game.id %></a>
+              <% }%>
+            <% } %>
+            <% if( runningGames.length < 1 ) { %>
+              No Games are Available to Join, instead create one
+            <% } %>
+          </div>
+        <br>
       </div> 
       <!-- End of Game List -->
     </div>
