@@ -48,11 +48,23 @@ body {
     margin-right: 30%;
 }
 
+.page-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+  
+#chat {
+    flex: 0 0 300px; /* Adjust the width of the chat column as needed */
+    margin-right: 20px;
+}
+
 .lobby-container {
+    flex:1;
     min-width: 400px;
     margin: 40px auto;
     margin-left: 10%;
-    margin-right: 10%;
+    margin-right: 5%;
     padding: 20px;
     border: 1px solid black;
     border-radius: 20px;
@@ -89,6 +101,35 @@ body {
     border: none;
     cursor: pointer;
     margin-bottom: 4px;
+  }
+
+  #chat {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  #chat-container {
+    margin-top: 20px;
+    flex-grow: 1;
+  }
+  
+  #messages {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    flex-grow: 1;
+  }
+  
+  input#chatMessage {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
   }
 
 
