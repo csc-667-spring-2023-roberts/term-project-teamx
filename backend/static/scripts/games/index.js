@@ -3374,14 +3374,7 @@
             playerEntry.querySelector(".username").innerText = gameElement.userinfo.username;
             playerEntry.querySelector(".count").innerText = gameElement.userinfo.count;
             playersContainer.appendChild(playerEntry);
-            const topCardTemplate = document.querySelector("#topcard-template");
-            const topCardContainer = document.querySelector("#topcard");
-            topCardContainer.innerHTML = "";
-            const topCardEntry = topCardTemplate.content.cloneNode(true);
-            topCardEntry.querySelector(".color").innerText = gameElement.current_game.current_color;
-            topCardEntry.querySelector(".value").innerText = gameElement.current_game.current_number;
-            topCardEntry.querySelector(".userid").innerText = gameElement.current_game.user_id;
-            topCardContainer.appendChild(topCardEntry);
+            document.getElementById("current-player-turn").textContent = "Current Player: " + gameElement.current_game.user_id;
             const topCardImgTemplate = document.querySelector("#topcard-template-img");
             const topCardImgContainer = document.querySelector("#topcardimg");
             topCardImgContainer.innerHTML = "";

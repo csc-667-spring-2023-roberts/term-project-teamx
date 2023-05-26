@@ -3,41 +3,55 @@
     <title>Game Page</title>
     <script src="/scripts/index.js" defer></script>
     <script src="/scripts/games/index.js" defer></script>
-    <link rel="stylesheet" href="/stylesheets/index.css" />
+    <link rel="stylesheet" href="/stylesheets/games.css" />
   </head>
   
   <body>
-    <div id="page-left">
-      <div id="buttons-in-gamepage">
+    <!-- Project Label -->
+    <div id="project-label">CSC-667 Spring 2023 Final Project - Team-X</div>
+
+    <!-- Logo -->
+    <div class="logo-container">
+      <a href="/">
+        <img class="logo" src="/img/logo.png">
+      </a>
+    </div>
+
+    <!-- Game Buttons Container -->
+    <div class="games-buttons-container">
+      <!-- Lobby Button -->
+      <form class="lobby-form" method="get" action="/lobby">
+        <input type="submit" value="Lobby">
+      </form>
+
+      <!-- Exit Button -->
+      <form class="exit-form" method="post" action="/games/exit/<%= game_id %>">
+        <input type="submit" value="Exit"/>
+      </form>
+    </div>
+    
+
+    <div class="game-container">
+      <div class="game-container-header">
+        <div>
+          <h3>GameID:<%= game_id %></h3>
+          <h3 id="userid-head"></h3>
+        </div>
         
-        <form action="/lobby" method="get">
-          <input type="submit" value="Lobby">
-        </form>
-        
-        <!-- Exit Button -->
-        <form method="post" action="/games/exit/<%= game_id %>">
-          <input type="submit" value="Exit"/>
-        </form>
-        
+        <h1 id="gamepage-header">Game Page</h1>
         <!-- Start Button -->
-        <button onclick="ClickUrlGET(`/games/<%=game_id%>/start`)">start</button>
-
-        <!-- Draw Card Button -->
-        <button onclick="ClickUrlPOST(`/games/<%=game_id%>/draw`)">draw</button>
-
+        <button onclick="ClickUrlGET(`/games/<%=game_id%>/start`)">Start</button>
       </div>
+      
 
-      <h1 id="gamepage-header">Game Page (Authenticated)</h1>
-      <h3>GameID:<%= game_id %> <p id="userid-head"> </p></h3>
-
-      <!-- Displaying players username and their total number of cards holding-->
+      <!-- Table: Username: Number of Cards Holding-->
       <div id="users-cardcount">
         <table>
           <thead>
             <tr>
               <th>Username</th>
               <th>Total Cards Holding</th>
-            </tr>          
+            </tr>
           </thead>
           <tbody id="players">
             <tr class="playersinfo">
@@ -48,60 +62,37 @@
         </table>
       </div>
 
+      <span id="current-player-turn">Current Player: ##</span>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Color</th>
-            <th>Value</th>
-            <th>Current Turn UserId</th>
-          </tr>
-        </thead>
-        <tbody id="topcard">
-        </tbody>
-      </table>
-
+      <!-- Where the Image of the Top Card is appended to -->
       <div id="topcardimg">
       </div>
-      
-      
 
       <!-- A Card -->
       <div>
         <div id="game-card-rows">
-              <img clas="cardimage">
+              <img class="cardimage">
           </div>
-      </div>
-
-
-      <!-- Chat Area -->
-      
-
-      <!-- A Chat Message -->
- 
-      <div id="users">
-        <div class="user">
-          <span class="username">Host:<%= creating_user %></span>
-          <div class="cards"></div>
-        </div>
       </div>
 
       <!-- A User -->
 
       <div id="user-count">
-      <span class="username"></span>
-      <span class="count"></span>
-      </div>     
+        <span class="username"></span>
+        <span class="count"></span>
+      </div>  
+
+    </div>
+
+   
 
     
       <script>
         window.addEventListener("load", function() {
           const url=`/games/init/<%=game_id%>`
-        fetch(url,{
-          method: "get"
-        }).then(value => {
-
-        })
+          fetch(url,{
+            method: "get"
+          }).then(value => {})
         })
         
         function ClickUrlPOST(url){
@@ -119,7 +110,9 @@
       </script>
         
     </div>
+      
     <div id="page-right">
+      <!-- Chat Area -->
       <div id="chat">Chat area</div>
       <!-- Chat Box -->
       <div id="chat-container"> 
@@ -129,15 +122,15 @@
         </label>
       </div>
     </div>
+
   </body>
 </html>
 
 
 
-
-
-
 <!-- Templates for the sockets async data-->
+
+<!-- Top Card Table Template-->
 <template id="topcard-template" >
   <tr>
     <th class="color"></th>
@@ -146,19 +139,25 @@
   </tr>
 </template>
 
+<!-- A TopCard Template -->
 <template id="topcard-template-img">
-  <img class="topcard-img" src="">
+  <button onclick="ClickUrlPOST(`/games/<%=game_id%>/draw`)">
+    <img class="topcard-img" src="">
+  </button>
 </template>
 
+<!-- A User Template -->
 <template id="user-template">
   <span class="username"></span>
   <div class="cardsCount"></div>
 </template>
 
+<!-- A Card Image Template -->
 <template id="card-template">
   <img class="cardimage" src="" >
 </template>
 
+<!-- A Chat Message Template -->
 <template id="chat-message-template" value="<%= game_id %>"">
   <div>
     <span class="username"></span>
@@ -167,6 +166,7 @@
   </div>
 </template>
 
+<!-- A Player Template -->
 <template id="players-template">
   <tr>
     <th class="username"></th>

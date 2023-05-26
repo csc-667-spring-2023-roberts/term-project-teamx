@@ -1,0 +1,125 @@
+/*Background*/
+body {
+    background-color:royalblue;
+    margin: 0;
+    padding: 0;
+  }
+
+/*The Text Bar At the Top*/
+#project-label{
+    background-color: white;
+    text-align: center;
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+}
+
+.logo {
+    display: block;
+    margin-top: 15px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 200px;
+    height: auto;
+}
+
+.link-button-container{
+    display: flex;
+    justify-content: space-between;
+}
+
+.link-button{
+    padding: 10px 20px;
+    text-decoration: none;
+    background-color: black;
+    color:white;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+}
+
+.link-button:first-child{
+    margin-left: 30%;
+}
+
+.link-button:last-child{
+    margin-right: 30%;
+}
+
+.game-container {
+    min-width: 400px;
+    margin: 40px auto;
+    margin-left: 10%;
+    margin-right: 10%;
+    padding: 20px;
+    border: 1px solid black;
+    border-radius: 20px;
+    background-color: white;
+}
+
+.game-container-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.game-container-header h1{
+    margin: 0;
+    text-align: center;
+}
+
+.game-container-header h3{
+    margin: 0;
+}
+
+.game-container-header button{
+    display: block;
+    margin-bottom: 5px;
+    margin-right: 10px;
+}
+
+.lobby-form input[type="submit"],
+.exit-form input[type="submit"]{
+    background-color: black;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+.join-button{
+    display: inline-block;
+    padding: 2px 5px;
+    text-decoration: none;
+    background-color: black;
+    color:white;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 4px;
+  }
+
+/* Card Image Styling */
+.topcard-img {
+    width: 100px;
+    border: 10px solid rgb(119, 242, 97);
+    border-radius: 20px;
+}
+
+.cardimage {
+    width: 100px;
+    height: 150px;
+    margin-top: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user .cards img {
+    width: 50px;
+    height: 75px;
+    margin-right: 5px;
+}
+

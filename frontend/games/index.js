@@ -77,18 +77,7 @@ fetch("/authentication/teamx", {
         // Append the player entry to the players container
         playersContainer.appendChild(playerEntry);
 
-        // Create a top card entry based on the template
-        const topCardTemplate = document.querySelector("#topcard-template");
-        const topCardContainer = document.querySelector("#topcard");
-        // Clear the existing top card
-        topCardContainer.innerHTML = "";
-        // Update the color, value, and user ID in the top card entry
-        const topCardEntry = topCardTemplate.content.cloneNode(true);
-        topCardEntry.querySelector(".color").innerText = gameElement.current_game.current_color;
-        topCardEntry.querySelector(".value").innerText = gameElement.current_game.current_number;
-        topCardEntry.querySelector(".userid").innerText = gameElement.current_game.user_id;
-        // Append the top card entry to the top card container
-        topCardContainer.appendChild(topCardEntry);
+        document.getElementById("current-player-turn").textContent = "Current Player: " + gameElement.current_game.user_id;
 
         // Display the Image of the TopCard
         // Create a Top Card entry based on the template
@@ -108,9 +97,6 @@ fetch("/authentication/teamx", {
         topCardImg.querySelector(".topcard-img").src = topCardImageURL;
         //Append the entry to the Container
         topCardImgContainer.appendChild(topCardImg);
-
-
-
 
         // Update the user ID header
         document.getElementById("userid-head").innerText = "UserID: " + userID;
